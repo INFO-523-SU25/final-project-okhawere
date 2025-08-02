@@ -3,9 +3,9 @@ title: "Cervical Cancer Risk Prediction"
 subtitle: "INFO 523 - Summer 2025 - Final Project"
 author: "Team Okhawere"
 title-slide-attributes:
-  data-background-image: images/watercolour_sys02_img34_teacup-ocean.jpg
-  data-background-size: stretch
-  data-background-opacity: "0.7"
+  data-background-image: images/Cervical CA Image.png
+  data-background-size: contain
+  data-background-opacity: "0.9"
   data-slide-number: none
 format:
   revealjs:
