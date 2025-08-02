@@ -1,11 +1,11 @@
 ---
-title: "Project Title"
+title: "Cervical Cancer Risk Prediction"
 subtitle: "INFO 523 - Final Project"
 author: 
-  - name: "Team name - Team member 1, Team member 2,..."
+  - name: "Team Okhawere    Team member: Kennedy"
     affiliations:
       - name: "College of Information Science, University of Arizona"
-description: "Project description"
+description: "Classification problem - predicting Cervical Cancer"
 format:
    html:
     code-tools: true
@@ -20,4 +20,10 @@ jupyter: python3
 
 ## Abstract
 
-Add project abstract here.
+### Introduction
+
+### Methods
+
+### Results
+
+### Conclusion
