@@ -1,0 +1,289 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Cervical Cancer Risk Prediction\"\n",
+        "subtitle: \"Proposal\"\n",
+        "author: \n",
+        "  - name: 'Team Okhawere   Team Member: Kennedy'\n",
+        "    affiliations:\n",
+        "      - name: \"College of Information Science, University of Arizona\"\n",
+        "description: \"Info 523 Final Project\"\n",
+        "format:\n",
+        "  html:\n",
+        "    code-tools: true\n",
+        "    code-overflow: wrap\n",
+        "    code-line-numbers: true\n",
+        "    embed-resources: true\n",
+        "bibliography: References/references.bib\n",
+        "editor: visual\n",
+        "code-annotations: hover\n",
+        "execute:\n",
+        "  warning: false\n",
+        "jupyter: python3\n",
+        "---"
+      ],
+      "id": "13d084c3"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "message": false
+      },
+      "source": [
+        "#| label: load-pkgs\n",
+        "#| echo: false\n",
+        "import numpy as np\n",
+        "import pandas as pd\n",
+        "import matplotlib.pyplot as plt\n",
+        "import seaborn as sns"
+      ],
+      "id": "load-pkgs",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Research Goal\n",
+        "\n",
+        "To build a predictive model that identifies women at risk of cervical cancer using demographic, social and behavioral history as well as clinical factors from the UCI Cervical Cancer Risk Factors dataset.\n",
+        "\n",
+        "## Goals and Motivation\n",
+        "\n",
+        "Cervical cancer remains a major global health issue, especially in low-resource settings where regular screenings are less accessible. Early prediction of high-risk individuals can enable timely intervention and reduce mortality. @gopalkrishnan2025cervical This project aims to develop a data-driven, machine learning–based predictive model to assess the likelihood of cervical cancer based on known risk factors such as sexual history, contraceptive use, smoking, and STD history.\n",
+        "\n",
+        "## Questions\n",
+        "\n",
+        "1.  Can we accurately predict cervical cancer biopsy outcomes using only non-invasive risk factors and lifestyle history?\n",
+        "2.  Which factor contribute the most to cervical cancer risk?\n",
+        "\n",
+        "The rationale for choosing this question is that, despite the availability of HPV vaccination for prevention, there is still a need for non-invasive approaches for early detection of cervical cancer through screening other than biopsy, even in patients that have been vaccinated, due to its still rising occurrence.\n",
+        "\n",
+        "## Dataset"
+      ],
+      "id": "5b7a0fbd"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "message": false
+      },
+      "source": [
+        "#| label: load-dataset\n",
+        "\n",
+        "def load_data(path):\n",
+        "  \"\"\"\n",
+        "  Load data and print a data information\n",
+        "\n",
+        "  Parameter:\n",
+        "     Path:Str\n",
+        "     Path to the CSV file to be loaded\n",
+        "  \n",
+        "  return:\n",
+        "     DataFrame \n",
+        "  \"\"\"\n",
+        "  #load data and store in df\n",
+        "  df = pd.read_csv(path, na_values='?') #consider '?' to be missing\n",
+        "  \n",
+        "  #return dataframe\n",
+        "  return df\n",
+        "\n",
+        "data = load_data('data/risk_factors_cervical_cancer.csv')"
+      ],
+      "id": "load-dataset",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "For this study, we will be utilizing data from the [UCI Cervical Cancer Risk Factors dataset](https://archive.ics.uci.edu/dataset/383/cervical+cancer+risk+factors) from the UCI Machine Learning Repository. The data is best suited for this analysis because it was collected at a limited resource setting and in specifically, Hospital Universitario de Caracas' in Caracas, Venezuela. It contains both demographic and behavioral data for women, along with results from four different cervical cancer screening tests: Hinselmann, Schiller, Cytology, Biopsy. Our goal is to assess patterns that lead to positive biopsy results, which is the most definitive screening measure for Cervical CA.\n",
+        "\n",
+        "This dataset was selected because it reflects real-world medical data with a variety of relevant features, including lifestyle factors (e.g., smoking, contraception), prior medical diagnoses, and social determinants of health. Overall, the total number of attributes in the dataset is `{python} data.shape[1]`\n",
+        "\n",
+        "## Overview of the data:\n",
+        "\n",
+        "### Target Variable:\n",
+        "The target variable is the result of the biopsy test, which is the most definitive indicator for cervical cancer in this dataset. It is a binary variable: 1 indicates cancer detected, 0 indicates no cancer. Below is the information about the target variable:"
+      ],
+      "id": "73e4f0e9"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "message": false
+      },
+      "source": [
+        "#| label: target-info\n",
+        "#| echo: false\n",
+        "\n",
+        "# Information on target\n",
+        "target_col = data.columns[-1]\n",
+        "\n",
+        "target_summary = pd.DataFrame({\n",
+        "    'Column Name': [target_col],\n",
+        "    'Non-Null Count': [data[target_col].notnull().sum()],\n",
+        "    'Data Type': [data[target_col].dtype]\n",
+        "})\n",
+        "\n",
+        "display(target_summary)"
+      ],
+      "id": "target-info",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Covariates: \n",
+        "Possible covarites to be included are Age, number of pregnancies, age at first intercourse, Smoking history, contraception use, STD history. Below are the information about these variables:"
+      ],
+      "id": "a2f51f1c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "message": false
+      },
+      "source": [
+        "#| label: covariate-info\n",
+        "#| echo: false\n",
+        "\n",
+        "# Information on covariates\n",
+        "covariates = pd.DataFrame({\n",
+        "    'Column Name': data.iloc[:, 0:32].columns,\n",
+        "    'Non-Null Count': data.iloc[:, 0:32].notnull().sum().values,\n",
+        "    'Data Type': data.iloc[:, 0:32].dtypes.values\n",
+        "})\n",
+        "\n",
+        "display(covariates)"
+      ],
+      "id": "covariate-info",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Study Population\n",
+        "The population for this study consists of `{python} data.shape[0]` female patients from the Hospital Universitario de Caracas in Caracas, Venezuela. The majority of the patients (approximately `{python} int(round((data['Biopsy'] == 0).mean() * 100))`%) have a negative biopsy result, suggestive of a potential imbalance in the distribution of outcomes [Figure @fig-figure-1]. The patient ages range from `{python} data['Age'].min()` to `{python} data['Age'].max()`, with a notable right-skewed distribution, indicating a larger representation of younger individuals in the sample [Figure @fig-figure-2]. \n",
+        "\n",
+        "### Distribution of the target variable"
+      ],
+      "id": "5f5b50a2"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "message": false
+      },
+      "source": [
+        "#| label: fig-figure-1\n",
+        "#| fig-cap: Distribution of Biopsy Results in the Cohort\n",
+        "#| echo: false\n",
+        "\n",
+        "plt.figure(figsize=(8, 6))\n",
+        "sns.countplot(x='Biopsy', data=data)\n",
+        "plt.title('Distribution of the Biopsy in the Cohort')\n",
+        "plt.xlabel('Biopsy Result (0: No, 1: Yes)')\n",
+        "plt.ylabel('Count')\n",
+        "plt.show()"
+      ],
+      "id": "fig-figure-1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Distribution of the Age in the Cohort"
+      ],
+      "id": "9a9210f6"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "message": false
+      },
+      "source": [
+        "#| label: fig-figure-2\n",
+        "#| fig-cap: Distribution of Age in the Cohort\n",
+        "#| echo: false\n",
+        "\n",
+        "plt.figure(figsize=(8, 6))\n",
+        "sns.violinplot(x='Age', data=data)\n",
+        "plt.title('Distribution of the Age in the Cohort')\n",
+        "plt.ylabel('Age')\n",
+        "plt.show()"
+      ],
+      "id": "fig-figure-2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Analysis Plan\n",
+        "Missing values will be evaluated and imputed using multiple strategies like the mean/mode imputation, KNN imputation, multiple imputation or completed removal depending on missingness patterns. Variables will transformed, normalized and encode appropriately. We will apply different classification algorithms and compare them using cross-validation and performance metrics like ROC-AUC, F1-Score, Precision, Recall to determine the best model. Proposed algorithms include Logistic Regression, Random Forest, XGBoost, Support Vector Machine.\n",
+        "\n",
+        "For Feature importance and interpretation, we will use SHAP values for interpretability and visualize the top contributing risk factors.\n",
+        "\n",
+        "## Proposed Timeline\n",
+        "\n",
+        "Since this is a single author project, I will be responsible for all aspects of the study, including data acquisition, preprocessing, analysis, model development, evaluation, interpretation, and reporting. The proposed timeline is as follows:\n",
+        "\n",
+        "|Time           | Overall Goal                                                | Specific Tasks\n",
+        "|---------------|-------------------------------------------------------------|---------------------------------------------------------------------------------------------\n",
+        "|**Week 1:**    |Data acquisition, literature review, and initial exploration |Load the dataset and perform a thorough exploratory data analysis, with a special focus on the distribution and patterns of missing values.\n",
+        "|**Week 2:**    |Data cleaning, preprocessing, and feature engineering        |Create new variables if necessary - Implement and compare several imputation strategies. - Split the data into training and testing sets\n",
+        "|**Week 3:**    |Model selection, training, hyperpararmeter tuning            |Train several classification models (e.g., Logistic Regression, Random Forest, Gradient     Boosting) - Address class imbalance by applying techniques like SMOTE or class weighting during model training. - Use cross-validation to fine-tune model hyperparameters and select the best model.\n",
+        "|**Week 4:**    |Model evaluation                                             |Evaluate the final models on the test set and compare their performance using AUC-ROC, F1-score, precision, and recall. - Perform a SHAP analyis on the best model to determine the most predictive covariates\n",
+        "|**Week 5:**    |Interpretation of results, visualization, and report writing | Interprer, write and finalize the project report\n",
+        "\n",
+        "## Repo Organization\n",
+        "\n",
+        "| Path/File       |\tPurpose and Description\n",
+        "|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------\n",
+        "|.github/\t    |Contains GitHub-specific configurations, including workflows, actions, and issue templates that automate and streamline repository management.\n",
+        "|_extra/\t    |Serves as a flexible storage space for miscellaneous or supplementary files that do not fit into other predefined project categories.\n",
+        "|_freeze/\t    |Stores frozen environment snapshots, capturing the exact package versions and setup used during specific stages of the project for reproducibility.\n",
+        "|_analysis/\t    |Hosts Jupyter notebooks outlining the project's analytical framework, including exploratory data analysis, modeling strategies, and evaluation plans.\n",
+        "|data/\t           |Central repository for all raw and processed data files essential to the project, including datasets, input files, and metadata.\n",
+        "|images/\t    |Contains visual assets such as diagrams, charts, and screenshots used throughout the project for documentation, presentations, and analysis.\n",
+        "|.gitignore\t    |Specifies files and directories to exclude from Git tracking, helping maintain a clean and efficient version control history.\n",
+        "|README.md.       |Provides a comprehensive overview of the project, including setup instructions, usage guidelines, objectives, and scope. Serves as the project's landing document.\n",
+        "|_quarto.yml\t    |Configuration file for Quarto, defining global settings for document rendering, output formats, and styling across all .qmd files.\n",
+        "|about.qmd\t    |Supplementary Quarto document offering background on the project’s purpose, team member bios, and contextual information.\n",
+        "|index.qmd\t    |Main Quarto document that will serve as the project's homepage, integrating code, visualizations, narrative, and final results.\n",
+        "|presentation.qmd |Quarto file designed to generate the final project presentation in slideshow format, summarizing key findings and insights.\n",
+        "|proposal.qmd\t    |Initial project planning document detailing the dataset, metadata, research questions, and a week-by-week roadmap. Updated regularly to reflect progress.\n",
+        "|References       |Contains cited references\n",
+        "|requirements.txt |Lists all Python dependencies and their versions required to run the project, ensuring consistent environment setup across collaborators.\n",
+        "\n",
+        "\n",
+        "## References"
+      ],
+      "id": "8b8f3885"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/opt/miniconda3/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
