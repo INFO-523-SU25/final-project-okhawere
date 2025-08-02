@@ -1,0 +1,12 @@
+{
+  "hash": "5b1e8a6d7fe8756f5561292849b61ba8",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"Cervical Cancer Risk Prediction\"\nformat: html\neditor: visual\njupyter: python3\n---\n\nThis project was developed by Team Okhawere For [INFO 523 - Data Mining and Discovery](https://datamineaz.org/) at the University of Arizona, taught by Dr. Greg Chism. The team is comprised of the following team members.\n\n-   Team member Kennedy: First Year, MSDS Student\n\n",
+    "supporting": [
+      "about_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

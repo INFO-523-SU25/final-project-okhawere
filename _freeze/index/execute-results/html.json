@@ -1,0 +1,12 @@
+{
+  "hash": "91f8b5cbeb90a97566b11d8819ccfe40",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"Cervical Cancer Risk Prediction\"\nsubtitle: \"INFO 523 - Final Project\"\nauthor: \n  - name: \"Team Okhawere    Team member: Kennedy\"\n    affiliations:\n      - name: \"College of Information Science, University of Arizona\"\ndescription: \"Classification problem - predicting Cervical Cancer\"\nformat:\n   html:\n    code-tools: true\n    code-overflow: wrap\n    embed-resources: true\neditor: visual\nexecute:\n  warning: false\n  echo: false\njupyter: python3\n---\n\n## Abstract\n\n### Introduction\n\n### Methods\n\n### Results\n\n### Conclusion\n\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}
