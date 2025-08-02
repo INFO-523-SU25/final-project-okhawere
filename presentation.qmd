@@ -5,6 +5,7 @@ author: "Team Okhawere"
 title-slide-attributes:
   data-background-image: images/Cervical CA Image.png
   data-background-size: contain
+  data-background-position: right
   data-background-opacity: "0.9"
   data-slide-number: none
 format:
