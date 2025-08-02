@@ -26,7 +26,7 @@
         "jupyter: python3\n",
         "---"
       ],
-      "id": "9bc37f56"
+      "id": "cf42c688"
     },
     {
       "cell_type": "code",
@@ -66,7 +66,7 @@
         "\n",
         "## Dataset"
       ],
-      "id": "22adf3e3"
+      "id": "e6deb348"
     },
     {
       "cell_type": "code",
@@ -113,7 +113,7 @@
         "\n",
         "The target variable is the result of the biopsy test, which is the most definitive indicator for cervical cancer in this dataset. It is a binary variable: 1 indicates cancer detected, 0 indicates no cancer. Below is the information about the target variable:"
       ],
-      "id": "d3585dd4"
+      "id": "20e29031"
     },
     {
       "cell_type": "code",
@@ -147,7 +147,7 @@
         "\n",
         "Possible covarites to be included are Age, number of pregnancies, age at first intercourse, Smoking history, contraception use, STD history. Below are the information about these variables:"
       ],
-      "id": "956673e2"
+      "id": "68b0bf44"
     },
     {
       "cell_type": "code",
@@ -181,7 +181,7 @@
         "\n",
         "### Distribution of the target variable"
       ],
-      "id": "4e1291b7"
+      "id": "85e6b57d"
     },
     {
       "cell_type": "code",
@@ -210,7 +210,7 @@
       "source": [
         "### Distribution of the Age in the Cohort"
       ],
-      "id": "0251b1db"
+      "id": "4308f3f7"
     },
     {
       "cell_type": "code",
@@ -276,7 +276,7 @@
         "\n",
         "## References"
       ],
-      "id": "15e9649b"
+      "id": "8c262e74"
     }
   ],
   "metadata": {
