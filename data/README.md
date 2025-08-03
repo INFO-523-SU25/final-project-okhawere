@@ -77,76 +77,76 @@ Biopsy: A binary target variable from a biopsy test result (1 = positive, 0 = ne
 
 ## Data Types:
 
-Age                                 858 non-null    int64  
+Age                                                 int64  
 
-Number of sexual partners           832 non-null    float64
+Number of sexual partners                           float64
 
-First sexual intercourse            851 non-null    float64
+First sexual intercourse                            float64
 
-Num of pregnancies                  802 non-null    float64
+Num of pregnancies                                  float64
 
-Smokes                              845 non-null    float64
+Smokes                                              float64
 
-Smokes (years)                      845 non-null    float64
+Smokes (years)                                      float64
 
-Smokes (packs/year)                 845 non-null    float64
+Smokes (packs/year)                                 float64
 
-Hormonal Contraceptives             750 non-null    float64
+Hormonal Contraceptives                             float64
 
-Hormonal Contraceptives (years)     750 non-null    float64
+Hormonal Contraceptives (years)                     float64
 
-IUD                                 741 non-null    float64
+IUD                                                 float64
 
-IUD (years)                         741 non-null    float64
+IUD (years)                                         float64
 
-STDs                                753 non-null    float64
+STDs                                                float64
 
-STDs (number)                       753 non-null    float64
+STDs (number)                                       float64
 
-STDs:condylomatosis                 753 non-null    float64
+STDs:condylomatosis                                 float64
 
-STDs:cervical condylomatosis        753 non-null    float64
+STDs:cervical condylomatosis                        float64
 
-STDs:vaginal condylomatosis         753 non-null    float64
+STDs:vaginal condylomatosis                         float64
 
-STDs:vulvo-perineal condylomatosis  753 non-null    float64
+STDs:vulvo-perineal condylomatosis                  float64
 
-STDs:syphilis                       753 non-null    float64
+STDs:syphilis                                       float64
 
-STDs:pelvic inflammatory disease    753 non-null    float64
+STDs:pelvic inflammatory disease                    float64
 
-STDs:genital herpes                 753 non-null    float64
+STDs:genital herpes                                 float64
 
-STDs:molluscum contagiosum          753 non-null    float64
+STDs:molluscum contagiosum                          float64
 
-STDs:AIDS                           753 non-null    float64
+STDs:AIDS                                           float64
 
-STDs:HIV                            753 non-null    float64
+STDs:HIV                                            float64
 
-STDs:Hepatitis B                    753 non-null    float64 
+STDs:Hepatitis B                                    float64 
 
-STDs:HPV                            753 non-null    float64
+STDs:HPV                                            float64
 
-STDs: Number of diagnosis           858 non-null    int64 
+STDs: Number of diagnosis                           int64 
 
-STDs: Time since first diagnosis    71 non-null     float64
+STDs: Time since first diagnosis                    float64
 
-STDs: Time since last diagnosis     71 non-null     float64
+STDs: Time since last diagnosis                     float64
 
-Dx:Cancer                           858 non-null    int64  
+Dx:Cancer                                           int64  
 
-Dx:CIN                              858 non-null    int64  
+Dx:CIN                                              int64  
 
-Dx:HPV                              858 non-null    int64  
+Dx:HPV                                              int64  
 
-Dx                                  858 non-null    int64  
+Dx                                                  int64  
 
-Hinselmann                          858 non-null    int64  
+Hinselmann                                          int64  
 
-Schiller                            858 non-null    int64  
+Schiller                                            int64  
 
-Citology                            858 non-null    int64  
+Citology                                            int64  
 
-Biopsy                              858 non-null    int64 
+Biopsy                                              float64
 
 
