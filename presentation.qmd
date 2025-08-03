@@ -11,19 +11,15 @@ title-slide-attributes:
 format:
   revealjs:
     theme:  ['data/customtheming.scss']
-  
+
 editor: visual
 jupyter: python3
 execute:
   echo: false
 ---
 
+## {background-image="images/Cervical CA image 2.png" background-size='contain' background-position="100% 50%"}
 
-:::{.slide
-data-background-image="images/Cervical CA image 2.png"
-data-background-size="contain"
-data-background-position="100% 50%"
-data-background-opacity="0.9"}
 ```{python}
 #| label: load-packages
 #| include: false
@@ -33,10 +29,7 @@ import pandas as pd
 import seaborn as sns
 ```
 
-:::
-
-
-
+## {background-image="images/Cervical CA image 2.png" background-size='contain' background-position="100% 50%"}
 ```{python}
 #| label: setup
 #| include: false
@@ -50,6 +43,8 @@ plt.rcParams['figure.dpi'] = 300
 plt.rcParams['savefig.dpi'] = 300
 plt.rcParams['figure.figsize'] = (6, 6 * 0.618)
 ```
+
+
 
 ```{python}
 #| label: load-data
