@@ -34,16 +34,16 @@ import seaborn as sns
 
 To build a predictive model that identifies women at risk of cervical cancer using demographic, social and behavioral history as well as clinical factors from the UCI Cervical Cancer Risk Factors dataset.
 
-## Goals and Motivation
-
-Cervical cancer remains a major global health issue, especially in low-resource settings where regular screenings are less accessible. Early prediction of high-risk individuals can enable timely intervention and reduce mortality. @gopalkrishnan2025cervical This project aims to develop a data-driven, machine learning–based predictive model to assess the likelihood of cervical cancer based on known risk factors such as sexual history, contraceptive use, smoking, and STD history.
+## Motivation
+While the prevalence of Cervical cancer has decreased considerably in the past decade, it continues to be a significant global health problem, especially in low-income settings (@gopalkrishnan2025cervical). Besides geographical differences, age-specific differences in cervical cancer incidence continue to persist(@Islami2019trends, @Gargano2025trends). Further, there is a strong socioeconomic gradient for both the risk and outcome of cervical cancer, with those belonging to lower-income and marginalized groups having a higher incidence and mortality due to limited access to healthcare, education, and preventive interventions (@Singh2023cervical). Early identification of high-risk individuals can facilitate timely intervention and can appreciably decrease mortality. This project proposes to create a data-driven, machine learning–based predictive model to evaluate the risk of cervical cancer based on established risk factors of age, sexual history, contraceptive use, smoking, STD history, and socioeconomic indicators.
 
 ## Questions
+The rationale for this research question stems from the fact that, although HPV vaccination significantly reduces the risk of cervical cancer, routine screening remains essential for early detection, even among vaccinated individuals, due to incomplete vaccine coverage and the continued incidence of HPV-related cancers. Cervical cancer can still occur in older women who were never vaccinated and in younger women despite vaccination, highlighting the age variability in diagnosis. Therefore, there is a critical need to explore non-invasive, cost-effective alternatives to biopsy for early detection to improve outcomes, enhance accessibility, and support screening across diverse age groups.
 
 1.  Can we accurately predict cervical cancer biopsy outcomes using only non-invasive risk factors and lifestyle history?
 2.  Which factor contribute the most to cervical cancer risk?
 
-The rationale for choosing this question is that, despite the availability of HPV vaccination for prevention, there is still a need for non-invasive approaches for early detection of cervical cancer through screening other than biopsy, even in patients that have been vaccinated, due to its still rising occurrence.
+
 
 ## Dataset
 
@@ -120,7 +120,7 @@ display(covariates)
 
 ## Study Population
 
-The population for this study consists of `{python} data.shape[0]` female patients from the Hospital Universitario de Caracas in Caracas, Venezuela. The majority of the patients (approximately `{python} int(round((data['Biopsy'] == 0).mean() * 100))`%) have a negative biopsy result, suggestive of a potential imbalance in the distribution of outcomes [Figure @fig-figure-1]. The patient ages range from `{python} data['Age'].min()` to `{python} data['Age'].max()`, with a notable right-skewed distribution, indicating a larger representation of younger individuals in the sample [Figure @fig-figure-2].
+The population for this study consists of `{python} data.shape[0]` female patients from the Hospital Universitario de Caracas in Caracas, Venezuela. The majority of the patients (approximately `{python} int(round((data['Biopsy'] == 0).mean() * 100))`%) have a negative biopsy result, suggestive of a potential imbalance in the distribution of cancer diagnosis [Figure @fig-figure-1]. The patient ages range from `{python} data['Age'].min()` to `{python} data['Age'].max()`, with a notable right-skewed distribution, indicating a larger representation of younger individuals in the sample [Figure @fig-figure-2].
 
 ### Distribution of the target variable
 
