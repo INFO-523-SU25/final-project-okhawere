@@ -22,16 +22,11 @@ execute:
 #| label: load-packages
 #| include: false
 
-::: {.slide data-background-image="images/Cervical CA image 2.png" 
-            data-background-size: contain
-            data-background-position: "100% 50%"
-            data-background-opacity: "0.9"}
-
 # Load packages here
 import pandas as pd
 import seaborn as sns
 
-:::
+
 
 ```
 
