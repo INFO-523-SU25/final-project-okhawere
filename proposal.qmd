@@ -73,7 +73,7 @@ data = load_data('data/risk_factors_cervical_cancer.csv')
 
 ```
 
-For this study, we will be utilizing data from the [UCI Cervical Cancer Risk Factors dataset](https://archive.ics.uci.edu/dataset/383/cervical+cancer+risk+factors) from the UCI Machine Learning Repository. The data is best suited for this analysis because it was collected at a limited resource setting in Hospital Universitario de Caracas' in Caracas, Venezuela. It contains both demographic and behavioral data for women, along with results from four different cervical cancer screening tests: Hinselmann, Schiller, Cytology, Biopsy. Our goal is to assess patterns that lead to positive biopsy results, which is the most definitive screening measure for Cervical CA.
+For this study, we will be utilizing data from the [UCI Cervical Cancer Risk Factors dataset](https://archive.ics.uci.edu/dataset/383/cervical+cancer+risk+factors) from the UCI Machine Learning Repository. The data is best suited for this analysis because it was collected at a limited resource setting in Hospital Universitario de Caracas' in Caracas, Venezuela. It contains both demographic and behavioral data for women, along with results from four different cervical cancer screening tests: Hinselmann, Schiller, Cytology, Biopsy. Our goal is to assess patterns that lead to positive biopsy results, which is the most definitive screening measure for cervical cancer.
 
 This dataset was selected because it reflects real-world medical data with a variety of relevant features, including lifestyle factors (e.g., smoking, contraception), prior medical diagnoses, and social determinants of health. Overall, the total number of attributes in the dataset is `{python} data.shape[1]`
 
@@ -102,7 +102,7 @@ display(target_summary)
 
 ### Covariates:
 
-Possible covarites to be included are Age, number of pregnancies, age at first intercourse, Smoking history, contraception use, STD history. Below are the information about these variables:
+Possible covarites to be included are age, number of pregnancies, age at first intercourse, smoking history, contraception use, STD history. Below are the information about these variables:
 
 ```{python}
 #| label: covariate-info
