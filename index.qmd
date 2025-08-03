@@ -5,7 +5,7 @@ author:
   - name: "Team Okhawere    Team member: Kennedy"
     affiliations:
       - name: "College of Information Science, University of Arizona"
-description: "Classification problem - predicting Cervical Cancer"
+description: "Classification Problem - Predicting Cervical Cancer"
 format:
    html:
     code-tools: true
