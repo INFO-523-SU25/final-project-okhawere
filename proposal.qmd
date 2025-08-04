@@ -47,7 +47,7 @@ The rationale for this study stems from the fact that, while HPV vaccination sig
 
 ## Ethical Consideration
 
-The data source does not explicitly state whether there was informed consent by participants for their data to be made publicly available, nor how the data was anonymized. Moreso, including children under 18 in research presents unique ethical challenges due to their limited autonomy and capacity for informed consent. Unauthorized use of sensitive medical data can be a violation of ethical standards, i.e., as established under HIPAA (U.S.) (@Edemekong2025HIPAA). Further Even when anonymized, misuse of this data can reinforce harmful stereotypes or biases, especially against women, sexual minorities, or certain cultural groups, because the dataset includes intimate and potentially stigmatizing information. More importantly, behavioral factors in the dataset (e.g., sexual behavior, contraceptive use) have different social meanings across cultures. Thus, a contextual interpretation is necessary.
+The data source does not explicitly state whether there was informed consent by participants for their data to be made publicly available, nor how the data was anonymized. Moreso, including children under 18 in research presents unique ethical challenges due to their limited autonomy and capacity for informed consent. Unauthorized use of sensitive medical data can be a violation of ethical standards, i.e., as established under HIPAA (U.S.) (@Edemekong2025HIPAA). Further, even when anonymized, misuse of this data can reinforce harmful stereotypes or biases, especially against women, sexual minorities, or certain cultural groups, because the dataset includes intimate and potentially stigmatizing information. More importantly, behavioral factors in the dataset (e.g., sexual behavior, contraceptive use) have different social meanings across cultures. Thus, a contextual interpretation is necessary.
 
 ## Dataset
 
@@ -178,7 +178,7 @@ Since this is a single author project, I will be responsible for all aspects of 
 ## Repo Organization
 
 | Path/File | Purpose and Description |
-|------------------|------------------------------------------------------|
+|-------------------|-----------------------------------------------------|
 | .github/ | Contains GitHub-specific configurations, including workflows, actions, and issue templates that automate and streamline repository management. |
 | \_extra/ | Serves as a flexible storage space for miscellaneous or supplementary files that do not fit into other predefined project categories. |
 | \_freeze/ | Stores frozen environment snapshots, capturing the exact package versions and setup used during specific stages of the project for reproducibility. |
