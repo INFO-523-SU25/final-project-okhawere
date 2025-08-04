@@ -20,10 +20,10 @@ jupyter: python3
 
 ## Abstract
 
-### Introduction
+### Introduction:
 
-### Methods
+### Methods:
 
-### Results
+### Results:
 
-### Conclusion
+### Conclusion:

@@ -18,7 +18,7 @@ execute:
   echo: false
 ---
 
-## {background-image="images/Cervical CA image 2.png" background-size='contain' background-position="100% 50%"}
+##  {background-image="images/Cervical CA image 2.png" background-size="contain" background-position="100% 50%"}
 
 ```{python}
 #| label: load-packages
@@ -29,7 +29,8 @@ import pandas as pd
 import seaborn as sns
 ```
 
-## {background-image="images/Cervical CA image 2.png" background-size='contain' background-position="100% 50%"}
+##  {background-image="images/Cervical CA image 2.png" background-size="contain" background-position="100% 50%"}
+
 ```{python}
 #| label: setup
 #| include: false
@@ -43,8 +44,6 @@ plt.rcParams['figure.dpi'] = 300
 plt.rcParams['savefig.dpi'] = 300
 plt.rcParams['figure.figsize'] = (6, 6 * 0.618)
 ```
-
-
 
 ```{python}
 #| label: load-data
