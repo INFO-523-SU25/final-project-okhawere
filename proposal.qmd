@@ -35,16 +35,19 @@ import seaborn as sns
 To build a predictive model that identifies women at risk of cervical cancer using demographic, social and behavioral history as well as clinical factors from the UCI Cervical Cancer Risk Factors dataset.
 
 ## Motivation
+
 While the prevalence of Cervical cancer has decreased considerably in the past decade, it continues to be a significant global health problem, especially in low-income settings (@gopalkrishnan2025cervical). Besides geographical differences, age-specific differences in cervical cancer incidence continue to persist (@Islami2019trends, @Gargano2025trends). Further, there is a strong socioeconomic gradient for both the risk and outcome of cervical cancer, with those belonging to lower-income and marginalized groups having a higher incidence and mortality due to limited access to healthcare, education, and preventive interventions (@Singh2023cervical). Early identification of high-risk individuals can facilitate timely intervention and can appreciably decrease mortality. This project proposes to create a data-driven, machine learning–based predictive model to evaluate the risk of cervical cancer based on established risk factors of age, sexual history, contraceptive use, smoking, STD history, and socioeconomic indicators.
 
 ## Questions
-The rationale for this study stems from the fact that, while HPV vaccination significantly reduces the risk of cervical cancer, routine screening remains essential for early detection, even among vaccinated individuals, due to incomplete vaccine coverage, and the continued incidence of HPV-related cancers. Cervical cancer can still occur in older women who were never vaccinated and in younger women despite vaccination, highlighting the age variability in diagnosis and continous monitoring of at-risk individuals. Therefore, there is a critical need to explore non-invasive, cost-effective alternatives to biopsy for early detection to improve outcomes, enhance accessibility, and support screening across diverse age groups.
+
+The rationale for this study stems from the fact that, while HPV vaccination significantly reduces the risk of cervical cancer, routine screening remains essential for early detection, even among vaccinated individuals, due to incomplete vaccine coverage, and the continued incidence of HPV-related cancers. Cervical cancer can still occur in older women who were never vaccinated and in younger women despite vaccination, highlighting the age variability in diagnosis, and the continuous monitoring of at-risk individuals. Therefore, there is a need to explore non-invasive, cost-effective alternatives to biopsy for early detection to improve outcomes, enhance accessibility, and support screening across diverse age groups.
 
 1.  Can we accurately predict cervical cancer biopsy outcomes using only non-invasive risk factors and lifestyle history?
 2.  Which factor contribute the most to cervical cancer risk?
 
 ## Ethical Consideration
-The data source does not explicitly state whether there was informed consent by participants for their data to be made publicly available, nor how the data was anonymized. Unauthorized use of sensitive medical data can be a violation of ethical standards, i.e., as established under HIPAA (U.S.) (@Edemekong2025HIPAA). Even when anonymized, misuse of this data can reinforce harmful stereotypes or biases, especially against women, sexual minorities, or certain cultural groups, because the dataset includes intimate and potentially stigmatizing information. More importantly, behavioral factors in the dataset (e.g., sexual behavior, contraceptive use) have different social meanings across cultures. Thus, a contextual interpretation is necessary.
+
+The data source does not explicitly state whether there was informed consent by participants for their data to be made publicly available, nor how the data was anonymized. Moreso, including children under 18 in research presents unique ethical challenges due to their limited autonomy and capacity for informed consent. Unauthorized use of sensitive medical data can be a violation of ethical standards, i.e., as established under HIPAA (U.S.) (@Edemekong2025HIPAA). Further Even when anonymized, misuse of this data can reinforce harmful stereotypes or biases, especially against women, sexual minorities, or certain cultural groups, because the dataset includes intimate and potentially stigmatizing information. More importantly, behavioral factors in the dataset (e.g., sexual behavior, contraceptive use) have different social meanings across cultures. Thus, a contextual interpretation is necessary.
 
 ## Dataset
 
@@ -75,11 +78,11 @@ data = load_data('data/risk_factors_cervical_cancer.csv')
 
 For this study, we will be utilizing data from the [UCI Cervical Cancer Risk Factors dataset](https://archive.ics.uci.edu/dataset/383/cervical+cancer+risk+factors) from the UCI Machine Learning Repository. The data is best suited for this analysis because it was collected at a limited resource setting in Hospital Universitario de Caracas' in Caracas, Venezuela. It contains both demographic and behavioral data for women, along with results from four different cervical cancer screening tests: Hinselmann, Schiller, Cytology, Biopsy. Our goal is to assess patterns that lead to positive biopsy results, which is the most definitive screening measure for cervical cancer.
 
-This dataset was selected because it reflects real-world medical data with a variety of relevant features, including lifestyle factors (e.g., smoking, contraception), prior medical diagnoses, and social determinants of health. Overall, the total number of attributes in the dataset is `{python} data.shape[1]`
+This dataset was selected because it reflects real-world medical data of low social economic setting, with a variety of relevant features, including lifestyle factors (e.g., smoking, contraception), prior medical diagnoses, and social determinants of health. Overall, the total number of attributes in the dataset is `{python} data.shape[1]`
 
-## Overview of the data:
+## Overview of the data
 
-### Target Variable:
+### Target Variable
 
 The target variable is the result of the biopsy test, which is the most definitive indicator for cervical cancer in this dataset. It is a binary variable: 1 indicates cancer detected, 0 indicates no cancer. Below is the information about the target variable:
 
@@ -100,7 +103,7 @@ target_summary = pd.DataFrame({
 display(target_summary)
 ```
 
-### Covariates:
+### Covariates
 
 Possible covarites to be included are age, number of pregnancies, age at first intercourse, smoking history, contraception use, STD history. Below are the information about these variables:
 
@@ -165,7 +168,7 @@ For Feature importance and interpretation, we will use SHAP values for interpret
 Since this is a single author project, I will be responsible for all aspects of the study, including data acquisition, preprocessing, analysis, model development, evaluation, interpretation, and reporting. The proposed timeline is as follows:
 
 | Time | Overall Goal | Specific Tasks |
-|------------------|---------------------|----------------------------------|
+|------------------|---------------------|---------------------------------|
 | **Week 1:** | Data acquisition, literature review, and initial exploration | Load the dataset and perform a thorough exploratory data analysis, with a special focus on the distribution and patterns of missing values. |
 | **Week 2:** | Data cleaning, preprocessing, and feature engineering | Create new variables if necessary - Implement and compare several imputation strategies. - Split the data into training and testing sets |
 | **Week 3:** | Model selection, training, hyperpararmeter tuning | Train several classification models (e.g., Logistic Regression, Random Forest, Gradient Boosting) - Address class imbalance by applying techniques like SMOTE or class weighting during model training. - Use cross-validation to fine-tune model hyperparameters and select the best model. |
@@ -175,7 +178,7 @@ Since this is a single author project, I will be responsible for all aspects of 
 ## Repo Organization
 
 | Path/File | Purpose and Description |
-|-----------------|-------------------------------------------------------|
+|------------------|------------------------------------------------------|
 | .github/ | Contains GitHub-specific configurations, including workflows, actions, and issue templates that automate and streamline repository management. |
 | \_extra/ | Serves as a flexible storage space for miscellaneous or supplementary files that do not fit into other predefined project categories. |
 | \_freeze/ | Stores frozen environment snapshots, capturing the exact package versions and setup used during specific stages of the project for reproducibility. |
