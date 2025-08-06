@@ -12,7 +12,7 @@ format:
     code-overflow: wrap
     code-line-numbers: true
     embed-resources: true
-bibliography: References/references.bib
+bibliography: _extra/References/references.bib
 editor: visual
 code-annotations: hover
 execute:
@@ -78,7 +78,7 @@ data = load_data('data/risk_factors_cervical_cancer.csv')
 
 For this study, we will be utilizing data from the [UCI Cervical Cancer Risk Factors dataset](https://archive.ics.uci.edu/dataset/383/cervical+cancer+risk+factors) from the UCI Machine Learning Repository. The data is best suited for this analysis because it was collected at a limited resource setting in Hospital Universitario de Caracas' in Caracas, Venezuela. It contains both demographic and behavioral data for women, along with results from four different cervical cancer screening tests: Hinselmann, Schiller, Cytology, Biopsy. Our goal is to assess patterns that lead to positive biopsy results, which is the most definitive screening measure for cervical cancer.
 
-This dataset was selected because it reflects real-world medical data of low social economic setting, with a variety of relevant features, including lifestyle factors (e.g., smoking, contraception), prior medical diagnoses, and social determinants of health. Overall, the total number of attributes in the dataset is `{python} data.shape[1]`
+This dataset was selected because it reflects real-world medical data of low social economic setting, with a variety of relevant features, including lifestyle factors (e.g., smoking, contraception), prior medical diagnoses, and social determinants of health. Overall, the total number of attributes in the dataset is `{python} data.shape[1]`.
 
 ## Overview of the data
 
@@ -168,7 +168,7 @@ For Feature importance and interpretation, we will use SHAP values for interpret
 Since this is a single author project, I will be responsible for all aspects of the study, including data acquisition, preprocessing, analysis, model development, evaluation, interpretation, and reporting. The proposed timeline is as follows:
 
 | Time | Overall Goal | Specific Tasks |
-|------------------|---------------------|---------------------------------|
+|-------------------|---------------------|--------------------------------|
 | **Week 1:** | Data acquisition, literature review, and initial exploration | Load the dataset and perform a thorough exploratory data analysis, with a special focus on the distribution and patterns of missing values. |
 | **Week 2:** | Data cleaning, preprocessing, and feature engineering | Create new variables if necessary - Implement and compare several imputation strategies. - Split the data into training and testing sets |
 | **Week 3:** | Model selection, training, hyperpararmeter tuning | Train several classification models (e.g., Logistic Regression, Random Forest, Gradient Boosting) - Address class imbalance by applying techniques like SMOTE or class weighting during model training. - Use cross-validation to fine-tune model hyperparameters and select the best model. |
@@ -178,7 +178,7 @@ Since this is a single author project, I will be responsible for all aspects of 
 ## Repo Organization
 
 | Path/File | Purpose and Description |
-|-------------------|-----------------------------------------------------|
+|---------------------|---------------------------------------------------|
 | .github/ | Contains GitHub-specific configurations, including workflows, actions, and issue templates that automate and streamline repository management. |
 | \_extra/ | Serves as a flexible storage space for miscellaneous or supplementary files that do not fit into other predefined project categories. |
 | \_freeze/ | Stores frozen environment snapshots, capturing the exact package versions and setup used during specific stages of the project for reproducibility. |
@@ -192,7 +192,6 @@ Since this is a single author project, I will be responsible for all aspects of 
 | index.qmd | Main Quarto document that will serve as the project's homepage, integrating code, visualizations, narrative, and final results. |
 | presentation.qmd | Quarto file designed to generate the final project presentation in slideshow format, summarizing key findings and insights. |
 | proposal.qmd | Initial project planning document detailing the dataset, metadata, research questions, and a week-by-week roadmap. Updated regularly to reflect progress. |
-| References | Contains cited references |
 | requirements.txt | Lists all Python dependencies and their versions required to run the project, ensuring consistent environment setup across collaborators. |
 
 ## References
