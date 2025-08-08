@@ -76,7 +76,7 @@ data = load_data('data/risk_factors_cervical_cancer.csv')
 
 ```
 
-For this study, we will be utilizing data from the [UCI Cervical Cancer Risk Factors dataset](https://archive.ics.uci.edu/dataset/383/cervical+cancer+risk+factors) from the UCI Machine Learning Repository. The data is best suited for this analysis because it was collected at a limited resource setting in Hospital Universitario de Caracas' in Caracas, Venezuela. It contains both demographic and behavioral data for women, along with results from four different cervical cancer screening tests: Hinselmann, Schiller, Cytology, Biopsy. Our goal is to assess patterns that lead to positive biopsy results, which is the most definitive screening measure for cervical cancer.
+For this study, we will be utilizing data from the [UCI Cervical Cancer Risk Factors dataset](https://archive.ics.uci.edu/dataset/383/cervical+cancer+risk+factors) from the UCI Machine Learning Repository. The data is cross-sectional in nature, and is best suited for this analysis because it was collected at a limited resource setting in Hospital Universitario de Caracas' in Caracas, Venezuela. It contains both demographic and behavioral data for women, along with results from four different cervical cancer screening tests: Hinselmann, Schiller, Cytology, Biopsy. Our goal is to assess patterns that lead to positive biopsy results, which is the most definitive screening measure for cervical cancer.
 
 This dataset was selected because it reflects real-world medical data of low social economic setting, with a variety of relevant features, including lifestyle factors (e.g., smoking, contraception), prior medical diagnoses, and social determinants of health. Overall, the total number of attributes in the dataset is `{python} data.shape[1]`.
 
@@ -182,7 +182,6 @@ Since this is a single author project, I will be responsible for all aspects of 
 | .github/ | Contains GitHub-specific configurations, including workflows, actions, and issue templates that automate and streamline repository management. |
 | \_extra/ | Serves as a flexible storage space for miscellaneous or supplementary files that do not fit into other predefined project categories. |
 | \_freeze/ | Stores frozen environment snapshots, capturing the exact package versions and setup used during specific stages of the project for reproducibility. |
-| \_analysis/ | Hosts Jupyter notebooks outlining the project's analytical framework, including exploratory data analysis, modeling strategies, and evaluation plans. |
 | data/ | Central repository for all raw and processed data files essential to the project, including datasets, input files, and metadata. |
 | images/ | Contains visual assets such as diagrams, charts, and screenshots used throughout the project for documentation, presentations, and analysis. |
 | .gitignore | Specifies files and directories to exclude from Git tracking, helping maintain a clean and efficient version control history. |
