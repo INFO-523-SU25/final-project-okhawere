@@ -2,7 +2,7 @@
 title: "Cervical Cancer Risk Prediction"
 subtitle: "INFO 523 - Final Project"
 author: 
-  - name: "Team Okhawere    
+  - name: "Team Okhawere"
     affiliations:
       - name: "College of Information Science, University of Arizona"
 description: "Classification Problem - Predicting Cervical Cancer"
@@ -20,7 +20,7 @@ jupyter: python3
 
 ## Abstract
 
-Early identification of patients at risk for biopsy-confirmed cervical pathology can support targeted follow-up in resource-limited settings. Using the UCI cervical risk-factors dataset, we sought to build a supervised classifier to predict biopsy outcome from demographic, behavioral, and STD-history features after removing diagnostic leakage. We compared Logistic Regression, Random Forest, and Gradient Boosting with 5-fold stratified cross-validation using Average Precision (PR-AUC). On the held-out test set (n=167), the Gradient Boosting model achieved Average Precision 0.166 and ROC-AUC 0.510. While this performance demonstrates the potential of machine learning in risk assessment, it also underscores the need for a balanced approach to optimize model utility in a clinical context.
+Early identification of patients at risk for biopsy-confirmed cervical pathology can support targeted follow-up in resource-limited settings. Using the UCI cervical risk-factors dataset, we sought to build a supervised classifier to predict biopsy outcome from demographic, behavioral, and STD-history. We compared Logistic Regression, Random Forest, and XGBoost with 5-fold stratified cross-validation using Average Precision (PR-AUC). On the held-out test set (n=167), the XGBoost model achieved Average Precision 0.170 and ROC-AUC 0.537. While this performance demonstrates the potential of machine learning in risk assessment, it also underscores the need for a balanced approach to optimize model utility in a clinical context.
 
 ## Introduction
 Cervical cancer remains a significant health concern, particularly in settings where access to standard screening and vaccination is limited. Current diagnostic pathways, which often involve extensive follow-up procedures like colposcopy and biopsy, can strain clinical resources, leading to delays for high-risk patients. To address this, a non-invasive tool that uses information already gathered during patient intake, such as demographics, sexual history, and smoking habits, could help clinicians prioritize follow-up evaluations. In view of the above, using the UCI cervical risk-factors dataset, this study seeks to evaluates the potential of such a lightweight prediction model to identify patients at high risk of a positive biopsy without adding extra clinical burden, and factors contributing to most of the risk. Our aim is to develop a tool that functions as a triage aid, ensuring limited resources are directed toward those who are most likely to benefit from further diagnostic steps.
@@ -432,9 +432,8 @@ from sklearn.impute import SimpleImputer
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier 
+from xgboost import XGBClassifier
 from sklearn.metrics import average_precision_score, roc_auc_score, classification_report, confusion_matrix, precision_recall_curve
 import shap
 
@@ -483,10 +482,11 @@ preprocessor = ColumnTransformer(
 #Define and Evaluate Models using Cross-Validation
 models = [
     ('Logistic Regression', LogisticRegression(random_state=42)),
-    ('K-Nearest Neighbors', KNeighborsClassifier()),
-    ('Decision Tree', DecisionTreeClassifier(random_state=42)),
     ('Random Forest', RandomForestClassifier(random_state=42)),
-    ('Gradient Boosting', GradientBoostingClassifier(random_state=42))
+    ('XGBoost', XGBClassifier(objective='binary:logistic',
+        eval_metric='aucpr',
+        tree_method='hist',
+        random_state=42))
 ]
 
 ```
@@ -499,12 +499,10 @@ models = [
  We used SMOTE oversampling technique to address class imbalance before training.
 
 ### Model Selction
-We evaluated five different classification machine learning models:
+We evaluated there different classification machine learning models:
 1. Logistic Regression (LR): A simple, interpretable model chosen as a baseline for performance comparison.
-2. K-Nearest Neighbors (KNN): A non-parametric model included to capture complex, non-linear relationships.
-3. Decision Tree (DCT): Tree and, rule-based model that serves as the building block for more advanced ensemble methods.
-4. Random Forest (RF): A powerful ensemble model that reduces overfitting by combining multiple decision trees.
-5. Gradient Boosting (GB): A high-performance ensemble model that builds trees sequentially, with each new tree correcting the errors of the previous one, often leading to excellent predictive performance.
+2. Random Forest (RF): A powerful ensemble model that reduces overfitting by combining multiple decision trees.
+3. XGBoost (XGB): A highly efficient and scalable implementation of the gradient boosting algorithm. It is often the preferred choice for structured data due to its superior speed and performance.
  
 The models are compared using 5-fold cross-validation on the training set, with average precision as the primary evaluation metric
 
@@ -531,7 +529,7 @@ for name, model in models:
 
 ```
 
-GB was the best untuned learner (mean AP 0.106 ± 0.064), with RF close behind (0.092 ± 0.022). 
+XGB was the best untuned learner (mean AP 0.093 ± 0.033), with RF close behind (0.092 ± 0.022). 
 
 ### Model Hyperparameter Tuning - Using GridSearchCV
 ```{python}
@@ -556,19 +554,6 @@ param_grids = {
         'classifier__class_weight': [None, 'balanced'],
         'smote__k_neighbors': [3, 5]
     },
-    'K-Nearest Neighbors': {
-        'classifier__n_neighbors': [3, 5, 7, 11, 21],
-        'classifier__weights': ['uniform', 'distance'],
-        'classifier__p': [1, 2],
-        'smote__k_neighbors': [3, 5]
-    },
-    'Decision Tree': {
-        'classifier__max_depth': [None, 10, 20, 30],
-        'classifier__min_samples_split': [2, 5, 10],
-        'classifier__min_samples_leaf': [1, 2, 4],
-        'classifier__class_weight': [None, 'balanced'],
-        'smote__k_neighbors': [3, 5]
-    },
     'Random Forest': {
         'classifier__n_estimators': [300, 600, 1000],
         'classifier__max_depth': [None, 10, 20],
@@ -579,13 +564,17 @@ param_grids = {
         'classifier__class_weight': [None, 'balanced', 'balanced_subsample'],
         'smote__k_neighbors': [3, 5]
     },
-    'Gradient Boosting': {
-        'classifier__n_estimators': [200, 400],
-        'classifier__learning_rate': [0.01, 0.05, 0.1],
-        'classifier__max_depth': [2, 3],
-        'classifier__subsample': [0.6, 0.8, 1.0],
-        'classifier__min_samples_leaf': [1, 5, 10],
-        'smote__k_neighbors': [3, 5]
+    'XGBoost': {
+        "classifier__n_estimators": [600, 900],
+        "classifier__learning_rate": [0.03, 0.10],
+        "classifier__max_depth": [2, 3],
+        "classifier__min_child_weight": [1, 3],
+        "classifier__subsample": [0.7],
+        "classifier__colsample_bytree": [0.8],
+        "classifier__reg_lambda": [1, 10],
+        "classifier__reg_alpha": [0, 0.1],
+        "classifier__gamma": [0],          
+        "smote__k_neighbors": [3]          
     }
 }
 
@@ -630,7 +619,7 @@ for name, base_model in models:
 
 val_score.sort(key=lambda x: x[1], reverse=True)
 
-print("\n--- Averger Precision ---")
+print("\n--- Average Precision ---")
 for name, score, params in val_score:
     print(f"{name:18s} {score:.4f}")
 
@@ -639,7 +628,7 @@ best_estimator = best_by_model[best_name][0]
 print(f"\nSelected model: {best_name} (VAL {SCORING}={best_val_score:.4f})")
 ```
 
-After grid search, Gradient Boosting remianed to the top (AP 0.191), followed by KNN (0.187), then RF (0.172), DCT (0.127), LR (0.1113).
+After grid search, XGB remianed on the top with average precision of 0.179, followed by  RF (0.172),  LR (0.113).
 
 ### Final Model Evaluation
 ```{python}
@@ -665,7 +654,7 @@ print(f"Specificity={spec:.3f} | Sensitivity={sens:.3f} (Recall)")
 
 ```
 
-The final GB model was evaluated on a held-out test set, where it yielded an AP (PR-AUC) of 0.166 and an ROC-AUC of 0.51. The confusion matrix revealed that while the model has high specificity (0.974), correctly identifying most negative cases, its sensitivity (0.273) is very low, as it missed 1 of the 11 true positive cases. Overall, the tuned GB generalizes modestly (VAL AP 0.191 → TEST AP 0.166); Hence, overfitting is limited. 
+The final XGB model was evaluated on a test set, where it yielded an AP (PR-AUC) of 0.17 and an ROC-AUC of 0.54. The confusion matrix revealed that while the model has high specificity (0.968), correctly identifying most negative cases, its sensitivity (0.091) is very low, as it missed 1 of the 11 true positive cases. Overall, the tuned XGB generalizes modestly (VAL AP 0.179 → TEST AP 0.170); Hence, overfitting is limited. 
 
 ## Feature Importance
 
@@ -738,9 +727,9 @@ To address our second aim, which is to identify important explanatory variables 
 
 
 ## Conclusion
-This project successfully demonstrates that a machine learning model, specifically a Gradient Boosting Classifier, can effectively predict the likelihood of a positive cervical cancer biopsy. By utilizing a robust methodology that accounts for significant class imbalance, the model provides a strong foundation for data-driven risk assessment.
+This project successfully demonstrates that a machine learning model, specifically a XGBoost Classifier, can effectively predict the likelihood of a positive cervical cancer biopsy. By utilizing a robust methodology that accounts for significant class imbalance, the model provides a strong foundation for data-driven risk assessment.
 
-While our model achieved an ROC-AUC of 0.510, indicating a moderate ability to discriminate between positive and negative cases, its high specificity (0.974) and low sensitivity (0.09) reveal a critical trade-off. This means the model is highly reliable when it predicts that a patient does not have cervical pathology (few false positives). Still, it misses a significant portion of the actual positive cases (resulting in many false negatives). At this threshold, it functions better as a triage aid than as a replacement for diagnostic testing.
+While our model achieved an ROC-AUC of 0.537, indicating a moderate ability to discriminate between positive and negative cases, its high specificity (0.968) and low sensitivity (0.09) reveal a critical trade-off. This means the model is highly reliable when it predicts that a patient does not have cervical pathology (few false positives). Still, it misses a significant portion of the actual positive cases (resulting in many false negatives). At this threshold, it functions better as a triage aid than as a replacement for diagnostic testing.
 
 For practical application, the model's utility could be enhanced by focusing on improving its ability to detect the rare positive cases. Future work should explore strategies such as:
   1. Threshold calibration to prioritize sensitivity over specificity.
