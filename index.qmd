@@ -36,6 +36,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import chi2_contingency, mannwhitneyu
+from tabulate import tabulate
 ```
 
 
@@ -419,6 +420,7 @@ print(table2)
 
 #### Train-Test Split 
 The data was split into stratified training (60%), validation (20%), and testing (20%) sets to ensure an even distribution of positive and negative cases across each partition.
+
 ```{python}
 #| label: model-preprocessor
 #| message: false
@@ -485,10 +487,8 @@ models = [
     ('Random Forest', RandomForestClassifier(random_state=42)),
     ('XGBoost', XGBClassifier(objective='binary:logistic',
         eval_metric='aucpr',
-        tree_method='hist',
         random_state=42))
 ]
-
 ```
 
 
@@ -565,16 +565,16 @@ param_grids = {
         'smote__k_neighbors': [3, 5]
     },
     'XGBoost': {
-        "classifier__n_estimators": [600, 900],
-        "classifier__learning_rate": [0.03, 0.10],
-        "classifier__max_depth": [2, 3],
+        "classifier__n_estimators": [10, 100, 500],
+        "classifier__learning_rate": [0.10],
+        "classifier__max_depth": [2, 5],
         "classifier__min_child_weight": [1, 3],
         "classifier__subsample": [0.7],
-        "classifier__colsample_bytree": [0.8],
+        "classifier__colsample_bytree": [1],
         "classifier__reg_lambda": [1, 10],
         "classifier__reg_alpha": [0, 0.1],
         "classifier__gamma": [0],          
-        "smote__k_neighbors": [3]          
+        "smote__k_neighbors": [3, 5]          
     }
 }
 
