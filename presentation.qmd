@@ -22,7 +22,6 @@ execute:
   echo: false
 ---
 
-
 ```{python}
 #| label: setup
 #| include: false
@@ -35,26 +34,21 @@ import matplotlib.pyplot as plt
 sns.set_theme(style="white")
 ```
 
+# Introduction
 
-# Introduction 
+-   Cervical cancer is preventable but persists where vaccination/screening access is limited
 
-- Cervical cancer is preventable but persists where vaccination/screening access is limited
-
-- We evaluate whether non-invasive history (demographics, sexual/reproductive history, contraception, smoking, STDs) can triage patients at higher risk of biopsy-positive disease
-
-
+-   We evaluate whether non-invasive history (demographics, sexual/reproductive history, contraception, smoking, STDs) can triage patients at higher risk of biopsy-positive disease
 
 ## Research Questions
 
-- Can we accurately predict cervical cancer biopsy outcomes using only non-invasive risk factors and lifestyle history?
+-   Can we accurately predict cervical cancer biopsy outcomes using only non-invasive risk factors and lifestyle history?
 
-- Which factor contribute the most to cervical cancer risk?
+-   Which factor contribute the most to cervical cancer risk?
 
-![](images/research.png)
+# Data
 
-# Data 
-
-- The dataset was collected at 'Hospital Universitario de Caracas' in Caracas, Venezuela. 
+-   The dataset was collected at 'Hospital Universitario de Caracas' in Caracas, Venezuela.
 
 ```{python}
 #| label: load-data
@@ -79,6 +73,7 @@ plt.show()
 # Modeling
 
 ## Baseline Model - Reported CV means (Average Precision)
+
 ```{python}
 
 baseline_cv = {
@@ -100,8 +95,8 @@ plt.show()
 
 ```
 
-
 ## Validation Leaderbaord (Average Precision)
+
 ```{python}
 
 val_ap = {
@@ -118,8 +113,8 @@ plt.show()
 
 ```
 
-
 ## Test Evaluation (XGBoost Model)
+
 ```{python}
 # Test data
 test_metrics = {
@@ -164,34 +159,35 @@ print(f"Recall (Sens): {test_metrics['Recall_Pos']:.3f} | Specificity: {test_met
 print(f"Precision (PPV): {test_metrics['Precision_Pos']:.3f} | Accuracy: {test_metrics['Accuracy']:.3f}")
 ```
 
-
 ## Feature Importance (SHAP Analysis)
-:::: {.columns}
 
+::::: columns
 ::: {.column width="40%"}
 ![](images/shap.png)
 :::
+
 ::: {.column width="60%"}
-- Hormonal Contraceptives (years) was the strongest driver. High values tend to increase predicted risk.
-- STDs: Number of diagnoses — more diagnoses push predictions up.
-- Years since first intercourse — longer history generally increases risk.
-- Age:  older age trends up.
-- STD :Time since last diagnosis — more recent STD tend to increase risk.
-- Number of pregnancies increase the risk 
+-   Hormonal Contraceptives (years) was the strongest driver. High values tend to increase predicted risk.
+-   STDs: Number of diagnoses — more diagnoses push predictions up.
+-   Years since first intercourse — longer history generally increases risk.
+-   Age: older age trends up.
+-   STD :Time since last diagnosis — more recent STD tend to increase risk.
+-   Number of pregnancies increase the risk
 :::
+:::::
 
-::::
+# Conclusion
 
-# Conclusion 
-- The model is not a definitive diagnostic tool but rather a triage aid to prioritize patients for further screening
-- **Future Work:**
-  * The model's performance could be improved with a larger, more balanced dataset
-  * Implementing a cost-sensitive learning approach could penalize misclassifying positive cases more heavily
-  * Additional feature engineering and domain expertise could further enhance predictive power
+-   The model is not a definitive diagnostic tool but rather a triage aid to prioritize patients for further screening
+-   **Future Work:**
+    -   The model's performance could be improved with a larger, more balanced dataset
+    -   Implementing a cost-sensitive learning approach could penalize misclassifying positive cases more heavily
+    -   Additional feature engineering and domain expertise could further enhance predictive power
 
 ## Limitations
-- Lack of Generalizability
-- Modest Sensitivity (Recall)
-- Moderate Predictive Power: Low ROC-AUC
-- Data Imbalance: Despite using SMOTE
-- Limited Feature Set
+
+-   Lack of Generalizability
+-   Modest Sensitivity (Recall)
+-   Moderate Predictive Power: Low ROC-AUC
+-   Data Imbalance: Despite using SMOTE
+-   Limited Feature Set
