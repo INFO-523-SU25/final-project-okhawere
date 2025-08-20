@@ -9,4 +9,3 @@ seaborn
 imblearn
 shap
 xgboost
-tabulate

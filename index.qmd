@@ -36,7 +36,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import chi2_contingency, mannwhitneyu
-from tabulate import tabulate
 ```
 
 
@@ -400,9 +399,9 @@ print(table1)
 ```
 
 The presence of any STD, STDs:condylomatosis, STDs:vulvo-perineal condylomatosis, and STDs:HIV all showed a significant relationship with the biopsy outcome (Table 1). Simialar,the number and timing of STDs were the only numerical variables that showed a statistically significant difference between the two groups. Specifically, STDs (number), STDs: Number of diagnosis, STDs: Time since first diagnosis, and STDs: Time since last diagnosis all had very low p-values (p<0.05), indicating that these factors are significantly different in the positive biopsy group (Table 2).
+
 @tbl-bivariate-results
 
-@tbl-bivariate-results2
 
 ```{python}
 #| label: tbl-bivariate-results2
@@ -414,6 +413,8 @@ The presence of any STD, STDs:condylomatosis, STDs:vulvo-perineal condylomatosis
 table2= mannwhitney_results.to_markdown()
 print(table2)
 ```
+
+@tbl-bivariate-results2
 
 ### Baseline Model Training and Evaluation
 ## Modeling and Evaluation
