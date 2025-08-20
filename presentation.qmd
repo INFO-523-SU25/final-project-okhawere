@@ -82,9 +82,9 @@ plt.show()
 ```{python}
 
 baseline_cv = {
-    "Logistic Regression": (0.1002, 0.0521),
-    "Random Forest": (0.1042, 0.0143),
-    "XGboost": (0.0826, 0.0144),
+    "Logistic Regression": (0.0855, 0.0515),
+    "Random Forest": (0.1096, 0.0611),
+    "XGboost": (0.119, 0.0581),
 }
 
 names = list(baseline_cv.keys())
@@ -105,9 +105,9 @@ plt.show()
 ```{python}
 
 val_ap = {
-    "Logistic Regression": 0.1131,
-    "Random Forest":  0.1724,
-    "XGboost": 0.1797,
+    "Logistic Regression": 0.1196,
+    "Random Forest":  0.0953,
+    "XGboost": 0.0921,
 }
 
 ax = sns.barplot(x=list(val_ap.keys()), y=list(val_ap.values()))
@@ -121,17 +121,17 @@ plt.show()
 
 ## Test Evaluation (XGBoost Model)
 ```{python}
-# Your existing data
+# Test data
 test_metrics = {
-    "PR-AUC": 0.170,
-    "ROC-AUC": 0.537,
-    "Accuracy": 0.910,
-    "Precision_Pos": 0.167,
-    "Recall_Pos": 0.091,
-    "F1_Pos": 0.118,
-    "Specificity": 0.968,
-    "Confusion": {"TN":151, "FP":5, "FN":10, "TP":1},
-    "Support": {"neg":156, "pos":11}
+    "PR-AUC": 0.145,
+    "ROC-AUC": 0.629,
+    "Accuracy": 0.784,
+    "Precision_Pos": 0.121,
+    "Recall_Pos": 0.364,
+    "F1_Pos": 0.182,
+    "Specificity": 0.814,
+    "Confusion": {"TN": 127, "FP": 29, "FN": 7, "TP": 4},
+    "Support": {"neg": 156, "pos": 11}
 }
 
 cm = test_metrics["Confusion"]
@@ -172,11 +172,12 @@ print(f"Precision (PPV): {test_metrics['Precision_Pos']:.3f} | Accuracy: {test_m
 ![](images/shap.png)
 :::
 ::: {.column width="60%"}
-
-- Reproductive history: more pregnancies ↑ risk.
-- Number of sexual partners: more partners ↑ risk.
-- Hormonal contraception: longer duration & ever-use ↑ risk
-- Age at first intercourse: earlier debut ↑ risk
+- Hormonal Contraceptives (years) was the strongest driver. High values tend to increase predicted risk.
+- STDs: Number of diagnoses — more diagnoses push predictions up.
+- Years since first intercourse — longer history generally increases risk.
+- Age:  older age trends up.
+- STD :Time since last diagnosis — more recent STD tend to increase risk.
+- Number of pregnancies increase the risk 
 :::
 
 ::::
@@ -190,7 +191,7 @@ print(f"Precision (PPV): {test_metrics['Precision_Pos']:.3f} | Accuracy: {test_m
 
 ## Limitations
 - Lack of Generalizability
-- Low Sensitivity (Recall)
+- Modest Sensitivity (Recall)
 - Moderate Predictive Power: Low ROC-AUC
 - Data Imbalance: Despite using SMOTE
 - Limited Feature Set
