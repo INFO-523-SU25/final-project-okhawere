@@ -23,8 +23,8 @@ jupyter: python3
 Early identification of patients at risk for biopsy-confirmed cervical pathology can support targeted follow-up in resource-limited settings. Using the UCI cervical risk-factors dataset, we sought to build a supervised classifier to predict biopsy outcome from demographic, behavioral, and STD-history. We compared Logistic Regression, Random Forest, and XGBoost with 5-fold stratified cross-validation using Average Precision (PR-AUC). On the held-out test set (n=167), the LR model achieved Average Precision 0.145 and ROC-AUC 0.629. While this performance demonstrates the potential of machine learning in risk assessment, it also underscores the need for a balanced approach to optimize model utility in a clinical context.
 
 ## Introduction
-Cervical cancer remains a significant health concern, particularly in settings where access to standard screening and vaccination is limited. Current diagnostic pathways, which often involve extensive follow-up procedures like colposcopy and biopsy, can strain clinical resources, leading to delays for high-risk patients. To address this, a non-invasive tool that uses information already gathered during patient intake, such as demographics, sexual history, and smoking habits, could help clinicians prioritize follow-up evaluations. In view of the above, using the UCI cervical risk-factors dataset, this study seeks to evaluates the potential of such a lightweight prediction model to identify patients at high risk of a positive biopsy without adding extra clinical burden, and factors contributing to most of the risk. Our aim is to develop a tool that functions as a triage aid, ensuring limited resources are directed toward those who are most likely to benefit from further diagnostic steps.
 
+Cervical cancer remains a significant health concern, particularly in settings where access to standard screening and vaccination is limited. Current diagnostic pathways, which often involve extensive follow-up procedures like colposcopy and biopsy, can strain clinical resources, leading to delays for high-risk patients. To address this, a non-invasive tool that uses information already gathered during patient intake, such as demographics, sexual history, and smoking habits, could help clinicians prioritize follow-up evaluations. In view of the above, using the UCI cervical risk-factors dataset, this study seeks to evaluates the potential of such a lightweight prediction model to identify patients at high risk of a positive biopsy without adding extra clinical burden, and factors contributing to most of the risk. Our aim is to develop a tool that functions as a triage aid, ensuring limited resources are directed toward those who are most likely to benefit from further diagnostic steps.
 
 ```{python}
 #| label: import-packages
@@ -37,7 +37,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import chi2_contingency, mannwhitneyu
 ```
-
 
 ```{python}
 #| label: load-dataset
@@ -125,54 +124,17 @@ print('Data Summary:', data.describe())
 The population for this study consists of `{python} data.shape[0]` female patients from the Hospital Universitario de Caracas in Caracas, Venezuela. The total number variables in the dataset is `{python} data.shape[1]`.
 
 ### Date cleaning
-Total missing per column:
-|Age                                     0|
-|Number of sexual partners              26|
-|First sexual intercourse                7|
-|Num of pregnancies                     56|
-|Smokes                                 13|
-|Smokes (years)                         13|
-|Smokes (packs/year)                    13|
-|Hormonal Contraceptives               108|
-|Hormonal Contraceptives (years)       108|
-|IUD                                   117|
-|IUD (years)                           117|
-|STDs                                  105|
-|STDs (number)                         105|
-|STDs:condylomatosis                   105|
-|STDs:cervical condylomatosis          105|
-|STDs:vaginal condylomatosis           105|
-|STDs:vulvo-perineal condylomatosis    105|
-|STDs:syphilis                         105|
-|STDs:pelvic inflammatory disease      105|
-|STDs:genital herpes                   105|
-|STDs:molluscum contagiosum            105|
-|STDs:AIDS                             105|
-|STDs:HIV                              105|
-|STDs:Hepatitis B                      105|
-|STDs:HPV                              105|
-|STDs: Number of diagnosis               0|
-|STDs: Time since first diagnosis      787|
-|STDs: Time since last diagnosis       787|
-|Dx:Cancer                               0|
-|Dx:CIN                                  0|
-|Dx:HPV                                  0|
-|Dx                                      0|
-|Hinselmann                              0|
-|Schiller                                0|
-|Citology                                0|
-|Biopsy                                  0|
 
-**Dropped Columns:** Columns containing diagnostic information that would cause data leakage, high correlation and rare or missing events were removed.
-- Hinselmann, Schiller, Citology, Dx, Dx:HPV, Dx:CIN, Dx:Cancer
-- STDs: Time since first diagnosis, STDs (number)
-- STDs:AIDS, STDs:cervical condylomatosis, STDs:pelvic inflammatory disease, STDs:genital herpes, STDs:molluscum contagiosum, STDs:Hepatitis B, STDs:HPV, STDs:vaginal condylomatosis, STDs:condylomatosis, STDs:vulvo-perineal condylomatosis
+Total missing per column: \|Age 0\| \|Number of sexual partners 26\| \|First sexual intercourse 7\| \|Num of pregnancies 56\| \|Smokes 13\| \|Smokes (years) 13\| \|Smokes (packs/year) 13\| \|Hormonal Contraceptives 108\| \|Hormonal Contraceptives (years) 108\| \|IUD 117\| \|IUD (years) 117\| \|STDs 105\| \|STDs (number) 105\| \|STDs:condylomatosis 105\| \|STDs:cervical condylomatosis 105\| \|STDs:vaginal condylomatosis 105\| \|STDs:vulvo-perineal condylomatosis 105\| \|STDs:syphilis 105\| \|STDs:pelvic inflammatory disease 105\| \|STDs:genital herpes 105\| \|STDs:molluscum contagiosum 105\| \|STDs:AIDS 105\| \|STDs:HIV 105\| \|STDs:Hepatitis B 105\| \|STDs:HPV 105\| \|STDs: Number of diagnosis 0\| \|STDs: Time since first diagnosis 787\| \|STDs: Time since last diagnosis 787\| \|Dx:Cancer 0\| \|Dx:CIN 0\| \|Dx:HPV 0\| \|Dx 0\| \|Hinselmann 0\| \|Schiller 0\| \|Citology 0\| \|Biopsy 0\|
+
+**Dropped Columns:** Columns containing diagnostic information that would cause data leakage, high correlation and rare or missing events were removed. - Hinselmann, Schiller, Citology, Dx, Dx:HPV, Dx:CIN, Dx:Cancer - STDs: Time since first diagnosis, STDs (number) - STDs:AIDS, STDs:cervical condylomatosis, STDs:pelvic inflammatory disease, STDs:genital herpes, STDs:molluscum contagiosum, STDs:Hepatitis B, STDs:HPV, STDs:vaginal condylomatosis, STDs:condylomatosis, STDs:vulvo-perineal condylomatosis
 
 **Dropped Duplicates:** A total of `{python} duplicated` total duplicate rows were identified and removed.
 
 **Correcting Implausible Values:** Records where a patient's age at first sexual intercourse was greater than their current age were corrected. The inconsistent values were replaced with missing values (np.nan).
 
 #### Missing Data and Feature Engineering
+
 ```{python}
 #| label: Data-cleaning-2
 #| message: false
@@ -200,14 +162,11 @@ if condy_cols:
 
 ```
 
-1. Dealing with Systematic Missing Data
-Patients with zero recorded STDs, the associated fields (such as "Time since first diagnosis" or other specific STD types) were used to impute missing. 
+1.  Dealing with Systematic Missing Data Patients with zero recorded STDs, the associated fields (such as "Time since first diagnosis" or other specific STD types) were used to impute missing.
 
-2. Feature Engineering
-We created a new variable Years since first intercourse.This new feature is calculated by subtracting the First sexual intercourse age from the patient's Age. 
- 
-  data['Years since first intercourse'] = data['Age'] - data['First sexual intercourse']
+2.  Feature Engineering We created a new variable Years since first intercourse.This new feature is calculated by subtracting the First sexual intercourse age from the patient's Age.
 
+data\['Years since first intercourse'\] = data\['Age'\] - data\['First sexual intercourse'\]
 
 ```{python}
 #| label: fig-figure-0
@@ -252,7 +211,6 @@ plt.ylabel('Count')
 plt.show()
 ```
 
-
 ```{python}
 #| label: fig-figure-2
 #| fig-cap:  "Distribution of Numerical variable"
@@ -294,7 +252,6 @@ plt.tight_layout()
 plt.show()
 ```
 
-
 ```{python}
 #| label: fig-figure-3
 #| fig-cap:  "Distribution of Categorical Variables"
@@ -330,8 +287,8 @@ plt.show()
 ```
 
 ### Relationship of Biopsy and Select Covariates
-In the cohort, patients with a positive biopsy tend to be older, have a longer duration since their first sexual intercourse, and a higher number of sexual partners. Additionally, longer periods of smoking and hormonal contraceptive use are also linked to a higher risk. 
-@fig-figure-4
+
+In the cohort, patients with a positive biopsy tend to be older, have a longer duration since their first sexual intercourse, and a higher number of sexual partners. Additionally, longer periods of smoking and hormonal contraceptive use are also linked to a higher risk. @fig-figure-4
 
 ```{python}
 #| label: fig-figure-4
@@ -377,7 +334,6 @@ plt.tight_layout()
 plt.show()
 
 ```
-
 
 ```{python}
 #| label: tbl-bivariate-results
@@ -430,10 +386,9 @@ table1= chi2_results
 print(table1)
 ```
 
-The presence of any STD, STDs:HIV, any condylomatosis were associated with significant relationship with the biopsy outcome (Table 1). Simialar,the number and timing of STDs were the only numerical variables that showed a statistically significant difference between the two groups. Specifically, STDs: Number of diagnosis, and STDs: Time since first diagnosis all had very low p-values (p<0.05), indicating that these factors are significantly different in the positive biopsy group (Table 2).
+The presence of any STD, STDs:HIV, any condylomatosis were associated with significant relationship with the biopsy outcome (Table 1). Simialar,the number and timing of STDs were the only numerical variables that showed a statistically significant difference between the two groups. Specifically, STDs: Number of diagnosis, and STDs: Time since first diagnosis all had very low p-values (p\<0.05), indicating that these factors are significantly different in the positive biopsy group (Table 2).
 
 @tbl-bivariate-results
-
 
 ```{python}
 #| label: tbl-bivariate-results2
@@ -446,14 +401,14 @@ table2= mannwhitney_results
 print(table2)
 ```
 
-
-
 @tbl-bivariate-results2
 
 ### Baseline Model Training and Evaluation
+
 ## Modeling and Evaluation
 
-#### Train-Test Split 
+#### Train-Test Split
+
 The data was split into stratified training (60%), validation (20%), and testing (20%) sets to ensure an even distribution of positive and negative cases across each partition.
 
 ```{python}
@@ -527,19 +482,18 @@ models = [
 ]
 ```
 
-
 #### Preprocessing Pipeline
- A preprocessing pipeline was defined to handle both numerical and categorical features by using imputation, scaling, and one-hot encoding.
- 
+
+A preprocessing pipeline was defined to handle both numerical and categorical features by using imputation, scaling, and one-hot encoding.
+
 #### Dealing with Imbalance
- We used SMOTE oversampling technique to address class imbalance before training.
+
+We used SMOTE oversampling technique to address class imbalance before training.
 
 ### Model Selction
-We evaluated there different classification machine learning models:
-1. Logistic Regression (LR): A simple, interpretable model chosen as a baseline for performance comparison.
-2. Random Forest (RF): A powerful ensemble model that reduces overfitting by combining multiple decision trees.
-3. XGBoost (XGB): A highly efficient and scalable implementation of the gradient boosting algorithm. It is often the preferred choice for structured data due to its superior speed and performance.
- 
+
+We evaluated there different classification machine learning models: 1. Logistic Regression (LR): A simple, interpretable model chosen as a baseline for performance comparison. 2. Random Forest (RF): A powerful ensemble model that reduces overfitting by combining multiple decision trees. 3. XGBoost (XGB): A highly efficient and scalable implementation of the gradient boosting algorithm. It is often the preferred choice for structured data due to its superior speed and performance.
+
 The models are compared using 5-fold cross-validation on the training set, with average precision as the primary evaluation metric
 
 ```{python}
@@ -665,10 +619,10 @@ best_estimator = best_by_model[best_name][0]
 print(f"\nSelected model: {best_name} (VAL {SCORING}={best_val_score:.4f})")
 ```
 
-After grid search, LR remianed on the top with average precision of 0.117, followed by  RF (0.0953), DCT (0.092).
-
+After grid search, LR remianed on the top with average precision of 0.117, followed by RF (0.0953), DCT (0.092).
 
 ### Final Model Evaluation
+
 ```{python}
 #| label: final-evaluation
 #| message: false
@@ -692,7 +646,7 @@ print(f"Specificity={spec:.3f} | Sensitivity={sens:.3f} (Recall)")
 
 ```
 
-The final LR model was evaluated on a test set, where it yielded an AP (PR-AUC) of 0.145 and an ROC-AUC of 0.629. The confusion matrix revealed that while the model has high specificity (0.968), correctly identifying most negative cases, its sensitivity (0.364) is very low, as it missed 4 of the 11 true positive cases. Overall, the tuned LR generalizes modestly (VAL AP 0.117 → TEST AP 0.116); Hence, overfitting is limited. 
+The final LR model was evaluated on a test set, where it yielded an AP (PR-AUC) of 0.145 and an ROC-AUC of 0.629. The confusion matrix revealed that while the model has high specificity (0.968), correctly identifying most negative cases, its sensitivity (0.364) is very low, as it missed 4 of the 11 true positive cases. Overall, the tuned LR generalizes modestly (VAL AP 0.117 → TEST AP 0.116); Hence, overfitting is limited.
 
 ## Feature Importance
 
@@ -724,7 +678,6 @@ shap_values = explainer.shap_values(X_train_val_processed)
 
 ```
 
-
 ```{python}
 #| label: fig-figure-5
 #| fig-cap:  "Relationship between Biopsy and Select Variables"
@@ -737,23 +690,21 @@ shap.summary_plot(shap_values, X_train_val_processed, feature_names=feature_name
 
 To address our second aim, which is to identify important explanatory variables likely driving the prediction. The Mean absolute SHAP indicated that predictions were dominated by sexual-exposure variables—number of sexual partners, age at first intercourse, and years since first intercourse—followed by number of pregnancies and hormonal contraceptive exposure (both years of use and ever/never status). Age contributed an additional signal, while STD burden/timing and smoking/IUD features provided smaller effects.
 
-- Hormonal Contraceptives (years) was the strongest driver. High values tend to increase predicted risk.
-- STDs: Number of diagnoses — more diagnoses push predictions up.
-- Years since first intercourse — longer history generally increases risk.
-- Age:  older age trends up (modest effect).
-- STD :Time since last diagnosis — more recent STD tend to increase risk.
-- Number of pregnancies increase the risk 
-
+-   Hormonal Contraceptives (years) was the strongest driver. High values tend to increase predicted risk.
+-   STDs: Number of diagnoses — more diagnoses push predictions up.
+-   Years since first intercourse — longer history generally increases risk.
+-   Age: older age trends up (modest effect).
+-   STD :Time since last diagnosis — more recent STD tend to increase risk.
+-   Number of pregnancies increase the risk
 
 ## Conclusion
+
 This project demonstrates that a regularized Logistic Regression model, trained with imbalance-aware preprocessing strategy, can offer the best performance among the candidates for predicting a positive cervical cancer biopsy.n baseline cross-validation on the training set, mean average precision (AP) was 0.0855 for Logistic Regression, 0.1096 for Random Forest, and 0.1199 for XGBoost. After randomized hyperparameter search on the combined train+validation data, Logistic Regression achieved the highest validation AP of 0.1169, and was selected as the final model.
 
 Our model achieved a modest ROC-AUC of 0.629 and PR-AUC of 0.145 in the test set, and at a threshold of 0.5 indicating a modest ability to discriminate between positive and negative cases. Its high specificity (0.814) and low sensitivity (0.364) with TN=127, FP=29, FN=7, TP=4, and precision = 0.121reveal a critical trade-off. This means the model captures about a third of true positives but produces many false positives. Still, it misses a significant portion of the actual positive cases (resulting in many false negatives). At this threshold, it functions better as a triage aid than as a replacement for diagnostic testing.
 
-For practical application, the model's utility could be enhanced by focusing on improving its ability to detect the rare positive cases. Future work should explore strategies such as:
-  1. decision-threshold calibration guided by precision–recall trade-offs
-  2. Incorporating richer clinical variables (e.g., specific HPV strain information) to improve the model's predictive power.
-Ultimately, this work highlights the potential for machine learning to assist in clinical decision-making by identifying key risk factors and providing a more informed basis for targeted follow-up.
+For practical application, the model's utility could be enhanced by focusing on improving its ability to detect the rare positive cases. Future work should explore strategies such as: 1. decision-threshold calibration guided by precision–recall trade-offs 2. Incorporating richer clinical variables (e.g., specific HPV strain information) to improve the model's predictive power. Ultimately, this work highlights the potential for machine learning to assist in clinical decision-making by identifying key risk factors and providing a more informed basis for targeted follow-up.
 
 ### Limitation
+
 The study has several limitations. First, the model was built and evaluated on a single-center dataset which limits it generazilibiy. Secondly, the model relies exclusively on demographic, behavioral, and self-reported STD history features that may reflect local practices and does not incorporate richer clinical variables, such as specific HPV viral types or Pap smear results, which are highly predictive in real-world diagnostics. Thirdly, despite using SMOTE to address the significant class imbalance, the final model still struggles to reliably identify the minority class, as evidenced by its low recall. Finally, the low sensitivity of the model is a critical flaw, and its moderate predictive power is only slightly better than random chance to effectively discriminate between patients with and without cervical pathology.
