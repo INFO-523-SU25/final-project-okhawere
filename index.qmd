@@ -2,7 +2,7 @@
 title: "Cervical Cancer Risk Prediction"
 subtitle: "INFO 523 - Final Project"
 author: 
-  - name: "Team Okhawere    Team member: Kennedy"
+  - name: "Team Okhawere    
     affiliations:
       - name: "College of Information Science, University of Arizona"
 description: "Classification Problem - Predicting Cervical Cancer"
@@ -23,7 +23,7 @@ jupyter: python3
 Early identification of patients at risk for biopsy-confirmed cervical pathology can support targeted follow-up in resource-limited settings. Using the UCI cervical risk-factors dataset, we sought to build a supervised classifier to predict biopsy outcome from demographic, behavioral, and STD-history features after removing diagnostic leakage. We compared Logistic Regression, Random Forest, and Gradient Boosting with 5-fold stratified cross-validation using Average Precision (PR-AUC). On the held-out test set (n=167), the Gradient Boosting model achieved Average Precision 0.166 and ROC-AUC 0.510. While this performance demonstrates the potential of machine learning in risk assessment, it also underscores the need for a balanced approach to optimize model utility in a clinical context.
 
 ## Introduction
-Cervical cancer remains a significant health concern, particularly in settings where access to standard screening and vaccination is limited. Current diagnostic pathways, which often involve extensive follow-up procedures like colposcopy and biopsy, can strain clinical resources, leading to delays for high-risk patients. To address this, a non-invasive tool that uses information already gathered during patient intake, such as demographics, sexual history, and smoking habits, could help clinicians prioritize follow-up evaluations. In view of the above, uUsing the UCI cervical risk-factors dataset, this is study seeks to evaluates the potential of such a lightweight prediction model to identify patients at high risk of a positive biopsy without adding extra clinical burden, and factors contributing to most od the risk. Our aim is to develop a tool that functions as a triage aid, ensuring limited resources are directed toward those who are most likely to benefit from further diagnostic steps.
+Cervical cancer remains a significant health concern, particularly in settings where access to standard screening and vaccination is limited. Current diagnostic pathways, which often involve extensive follow-up procedures like colposcopy and biopsy, can strain clinical resources, leading to delays for high-risk patients. To address this, a non-invasive tool that uses information already gathered during patient intake, such as demographics, sexual history, and smoking habits, could help clinicians prioritize follow-up evaluations. In view of the above, using the UCI cervical risk-factors dataset, this study seeks to evaluates the potential of such a lightweight prediction model to identify patients at high risk of a positive biopsy without adding extra clinical burden, and factors contributing to most of the risk. Our aim is to develop a tool that functions as a triage aid, ensuring limited resources are directed toward those who are most likely to benefit from further diagnostic steps.
 
 
 ```{python}
