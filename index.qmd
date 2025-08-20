@@ -20,10 +20,733 @@ jupyter: python3
 
 ## Abstract
 
-### Introduction:
+Early identification of patients at risk for biopsy-confirmed cervical pathology can support targeted follow-up in resource-limited settings. Using the UCI cervical risk-factors dataset, we sought to build a supervised classifier to predict biopsy outcome from demographic, behavioral, and STD-history features after removing diagnostic leakage. We compared Logistic Regression, Random Forest, and Gradient Boosting with 5-fold stratified cross-validation using Average Precision (PR-AUC). On the held-out test set (n=167), the Gradient Boosting model achieved Average Precision 0.166 and ROC-AUC 0.510. While this performance demonstrates the potential of machine learning in risk assessment, it also underscores the need for a balanced approach to optimize model utility in a clinical context.
 
-### Methods:
+## Introduction
+Cervical cancer remains a significant health concern, particularly in settings where access to standard screening and vaccination is limited. Current diagnostic pathways, which often involve extensive follow-up procedures like colposcopy and biopsy, can strain clinical resources, leading to delays for high-risk patients. To address this, a non-invasive tool that uses information already gathered during patient intake, such as demographics, sexual history, and smoking habits, could help clinicians prioritize follow-up evaluations. In view of the above, uUsing the UCI cervical risk-factors dataset, this is study seeks to evaluates the potential of such a lightweight prediction model to identify patients at high risk of a positive biopsy without adding extra clinical burden, and factors contributing to most od the risk. Our aim is to develop a tool that functions as a triage aid, ensuring limited resources are directed toward those who are most likely to benefit from further diagnostic steps.
 
-### Results:
 
-### Conclusion:
+```{python}
+#| label: import-packages
+#| message: false
+#| echo: false
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import chi2_contingency, mannwhitneyu
+```
+
+
+```{python}
+#| label: load-dataset
+#| message: false
+#| echo: false
+#| results: hide
+
+def load_data(path):
+  """
+  Load data and print a data information
+
+  Parameter:
+     Path:Str
+     Path to the CSV file to be loaded
+  
+  return:
+     DataFrame 
+  """
+  #load data and store in df
+  df = pd.read_csv(path, na_values='?') #consider '?' to be missing
+  
+  #return dataframe
+  return df
+
+data_new = load_data('data/risk_factors_cervical_cancer.csv')
+
+print("Data Information:", data_new.info())
+
+print("Top Rows:", data_new.head())
+
+# Calculate the count of missing values per column
+missing = data_new.isna().sum()
+
+#Drop Other diagnostic approach: Hinselmann, Schiller, Citology and Dx to avoid data leakege
+data = data_new.drop(columns=['Hinselmann','Schiller','Citology','Dx','Dx:HPV','Dx:CIN','Dx:Cancer'], axis = 1)
+
+```
+
+## Data Preprocessing
+
+```{python}
+#| label: Data-cleaning-1
+#| message: false
+#| echo: false
+#| results: hide
+
+#Check for duplicates
+duplicated= data.duplicated().sum()
+print(f"Data has {duplicated} duplicate row")
+
+#investigate the duplicated row
+duplicated_row = data[data.duplicated()]
+print("\nDuplicated rows found:")
+print(duplicated_row )
+
+# Drop duplicates
+print("\nDropping duplicate rows...")
+data = data.drop_duplicates()
+print("\nShape after dropping duplicates:")
+print(data.shape)
+
+#Age vs FSI imbalance
+age_Vs_FSI_error = data[data['First sexual intercourse']> data['Age']]
+print("\nRows with Age vs FSI error:")
+print(age_Vs_FSI_error)
+
+#Based on biological plausibility, other parameters like Num of pregnancies
+data.iloc[312, 2] = np.nan #Has 3 previous pregnancies, FSI is most likely wrong
+data.iloc[812, [0, 2]] = np.nan #Unsure of age or FSI, Set both to missing
+
+# Print the modified rows to show the changes
+print("\nVerifying changes to specific rows:")
+print("Row at index 312 after modification:")
+print(data.iloc[312, 2])
+print("\nRow at index 812 after modification:")
+print(data.iloc[812,[0, 2]])
+
+#standardize data type
+cat_var = ['Smokes', 'Hormonal Contraceptives', 'IUD', 'STDs', 'STDs:condylomatosis','STDs:cervical condylomatosis','STDs:vaginal condylomatosis', 'STDs:vulvo-perineal condylomatosis','STDs:syphilis', 'STDs:pelvic inflammatory disease', 'STDs:genital herpes', 'STDs:molluscum contagiosum', 'STDs:AIDS', 'STDs:HIV', 'STDs:Hepatitis B', 'STDs:HPV']
+
+data[cat_var] = data[cat_var].astype('category')
+
+num_var = data.select_dtypes(exclude = ['category']).columns
+
+print('Data Summary:', data.describe())
+```
+
+The population for this study consists of `{python} data.shape[0]` female patients from the Hospital Universitario de Caracas in Caracas, Venezuela. The total number variables in the dataset is `{python} data.shape[1]`.
+
+### Date cleaning
+Total missing per column:
+|Age                                     0|
+|Number of sexual partners              26|
+|First sexual intercourse                7|
+|Num of pregnancies                     56|
+|Smokes                                 13|
+|Smokes (years)                         13|
+|Smokes (packs/year)                    13|
+|Hormonal Contraceptives               108|
+|Hormonal Contraceptives (years)       108|
+|IUD                                   117|
+|IUD (years)                           117|
+|STDs                                  105|
+|STDs (number)                         105|
+|STDs:condylomatosis                   105|
+|STDs:cervical condylomatosis          105|
+|STDs:vaginal condylomatosis           105|
+|STDs:vulvo-perineal condylomatosis    105|
+|STDs:syphilis                         105|
+|STDs:pelvic inflammatory disease      105|
+|STDs:genital herpes                   105|
+|STDs:molluscum contagiosum            105|
+|STDs:AIDS                             105|
+|STDs:HIV                              105|
+|STDs:Hepatitis B                      105|
+|STDs:HPV                              105|
+|STDs: Number of diagnosis               0|
+|STDs: Time since first diagnosis      787|
+|STDs: Time since last diagnosis       787|
+|Dx:Cancer                               0|
+|Dx:CIN                                  0|
+|Dx:HPV                                  0|
+|Dx                                      0|
+|Hinselmann                              0|
+|Schiller                                0|
+|Citology                                0|
+|Biopsy                                  0|
+
+**Dropped Columns:**Columns containing diagnostic information that would cause data leakage were removed.
+- Hinselmann, Schiller, Citology        
+- Dx:HPV, Dx:CIN, Dx:Cancer, Dx
+- STDs
+
+**Dropped Duplicates:** A total of `{python} duplicated` total duplicate rows were identified and removed.
+
+**Correcting Implausible Values:** Records where a patient's age at first sexual intercourse was greater than their current age were corrected. The inconsistent values were replaced with missing values (np.nan).
+
+#### Missing Data and Feature Engineering
+```{python}
+#| label: Data-cleaning-2
+#| message: false
+#| echo: false
+#| results: hide
+
+#Dealing with systematic missing data
+columns_to_fill = data.loc[:, 'STDs':'STDs: Time since last diagnosis'].columns
+
+#replace values with zero 
+for col in columns_to_fill:
+    if col != 'STDs: Number of diagnosis':
+      mask = (data[col].isna()) & (data['STDs: Number of diagnosis'] == 0) & (data['STDs'] != 1)
+      data.loc[mask, col] = 0
+
+
+#Feature Engineer
+#Years since first diagnosis
+data['Years since first intercourse'] = data['Age'] - data['First sexual intercourse']
+```
+
+1. Dealing with Systematic Missing Data
+Patients with zero recorded STDs, the associated fields (such as "Time since first diagnosis" or other specific STD types) were used to impute missing. 
+
+2. Feature Engineering
+We created a new variable Years since first intercourse.This new feature is calculated by subtracting the First sexual intercourse age from the patient's Age. 
+ 
+  data['Years since first intercourse'] = data['Age'] - data['First sexual intercourse']
+
+### Target Variable
+
+The target variable, biopsy test (1 indicates cancer detected, 0 indicates no cancer), is the most definitive indicator for cervical cancer. The majority of the patients (approximately `{python} int(round((data['Biopsy'] == 1).mean() * 100))`%) have a positive biopsy result, suggestive of a potential imbalance in the distribution of cancer diagnosis [Figure @fig-figure-1].
+
+```{python}
+#| label: fig-figure-1
+#| fig-cap:  "Distribution of Biopsy Results in the Cohort"
+#| message: false
+#| echo: false
+
+
+plt.figure(figsize=(8, 6))
+sns.countplot(x='Biopsy', data=data)
+plt.title('Distribution of the Biopsy in the Cohort')
+plt.xlabel('Biopsy Result (0: No, 1: Yes)')
+plt.ylabel('Count')
+plt.show()
+```
+
+
+```{python}
+#| label: fig-figure-2
+#| fig-cap:  "Distribution of Numerical variable"
+#| message: false
+#| echo: false
+#| results: hide
+
+# Set up the style
+plt.style.use('default')
+sns.set_palette("viridis")
+
+# Visualization of Numerical variables
+# Calculate how many rows we need for numerical variables 
+num_numerical = len(num_var)
+cols = 4
+rows = (num_numerical + cols - 1) // cols
+
+fig, axes = plt.subplots(rows, cols, figsize=(20, 5*rows))
+axes = axes.flatten()
+
+for i, var in enumerate(num_var):
+    if i < len(axes):
+        sns.histplot(data=data, x=var, kde=True, ax=axes[i])
+        axes[i].set_title(f'Distribution of {var}', fontweight='bold')
+        axes[i].set_xlabel(var)
+        axes[i].set_ylabel('Count')
+        axes[i].grid(True, alpha=0.3)
+
+# Hide any empty subplots
+for j in range(i+1, len(axes)):
+    axes[j].set_visible(False)
+
+plt.tight_layout()
+plt.show()
+```
+
+
+```{python}
+#| label: fig-figure-3
+#| fig-cap:  "Distribution of Categorical Variables"
+#| message: false
+#| echo: false
+#| results: hide
+
+# Visualization of Categorical variables
+
+# Calculate how many rows we need for categorical variables 
+num_categorical = len(cat_var)
+cols = 4
+rows = (num_categorical + cols - 1) // cols
+
+fig, axes = plt.subplots(rows, cols, figsize=(20, 5*rows))
+axes = axes.flatten()
+
+for i, var in enumerate(cat_var):
+    if i < len(axes):
+        sns.countplot(data=data, x=var, ax=axes[i])
+        axes[i].set_title(f'Distribution of {var}', fontweight='bold')
+        axes[i].set_xlabel(var)
+        axes[i].set_ylabel('Count')
+        axes[i].tick_params(axis='x', rotation=45)
+        axes[i].grid(True, alpha=0.3)
+
+# Hide any empty subplots
+for j in range(i+1, len(axes)):
+    axes[j].set_visible(False)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+### Relationship of Biopsy and Select Covariates
+In the cohort, patients with a positive biopsy tend to be older, have a longer duration since their first sexual intercourse, and a higher number of sexual partners. Additionally, longer periods of smoking and hormonal contraceptive use are also linked to a higher risk. 
+@fig-figure-4
+
+```{python}
+#| label: fig-figure-4
+#| fig-cap:  "Relationship between Biopsy and Select Variables"
+#| message: false
+#| echo: false
+
+# Key Bivariate Relationships between Covariates and Biopsy
+# Select covariates
+covariate = ['Age', 'Number of sexual partners', 'First sexual intercourse', 
+             'Years since first intercourse', 'Smokes', 'Hormonal Contraceptives', 
+             'IUD', 'STDs']
+
+# Create subplots for bivariate analysis
+cols = 4
+rows = (len(covariate) + cols - 1) // cols
+
+fig, axes = plt.subplots(rows, cols, figsize=(18, 6*rows))
+axes = axes.flatten()
+
+for i, var in enumerate(covariate):
+    if i < len(axes):
+        if data[var].dtype in ['int64', 'float64']:
+            # Create box plot for numerical variables
+            sns.boxplot(data=data, x='Biopsy', y=var, ax=axes[i], palette='coolwarm')
+            axes[i].set_title(f'{var} vs Biopsy', fontweight='bold')
+            axes[i].set_xticklabels(['Negative', 'Positive'])
+            axes[i].set_ylabel(var)
+        else:
+            # Create count plot for categorical variables
+            sns.countplot(data=data, x=var, hue='Biopsy', ax=axes[i], palette='coolwarm')
+            axes[i].set_title(f'{var} vs Biopsy', fontweight='bold')
+            axes[i].tick_params(axis='x', rotation=45)
+            axes[i].legend(title='Biopsy', labels=['Negative', 'Positive'])
+        
+        axes[i].grid(True, alpha=0.3)
+
+# Hide any empty subplots
+for j in range(i+1, len(axes)):
+    axes[j].set_visible(False)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+
+```{python}
+#| label: tbl-bivariate-results
+#| tbl-cap: "Summary of Chi-Square Test"
+#| message: false
+#| echo: false
+
+def bivariate_tests(data):
+    """
+    Simple bivariate tests between variables and biopsy.
+    Returns:
+        tuple: (mannwhitney_results, chi2_results)
+    """
+    
+    # Store Chi-square 
+    chi2_results = []
+    for var in cat_var:
+      if var != 'Biopsy':
+        ctab = pd.crosstab(data[var], data['Biopsy'])
+        chi2, p, dof, expected = chi2_contingency(ctab)
+        chi2_results.append({
+            'Variable': var,
+            'Chi-Square': chi2,
+            'p-value': p,
+            'Significant': p < 0.05
+        })
+    
+    # Mann-Whitney tests results storage
+    mannwhitney_results = []
+    for var in num_var:
+        group0 = data[data['Biopsy'] == 0][var].dropna()
+        group1 = data[data['Biopsy'] == 1][var].dropna()
+        h_stat, p = mannwhitneyu(group0, group1)
+        mannwhitney_results.append({
+            'Variable': var,
+            'U-statistic': h_stat,
+            'p-value': p,
+            'Median (No Biopsy)': group0.median(),
+            'Median (Biopsy)': group1.median(),
+            'Significant': p < 0.05
+        })
+    
+    return pd.DataFrame(mannwhitney_results), pd.DataFrame(chi2_results)
+
+# output the function
+mannwhitney_results, chi2_results = bivariate_tests(data)
+
+# Print the Chi-squared results as a table
+print(chi2_results.to_markdown(index=False))
+
+
+```
+
+The presence of any STD, STDs:condylomatosis, STDs:vulvo-perineal condylomatosis, and STDs:HIV all showed a significant relationship with the biopsy outcome (Table 1). Simialar,the number and timing of STDs were the only numerical variables that showed a statistically significant difference between the two groups. Specifically, STDs (number), STDs: Number of diagnosis, STDs: Time since first diagnosis, and STDs: Time since last diagnosis all had very low p-values (p<0.05), indicating that these factors are significantly different in the positive biopsy group (Table 2).
+@tbl-bivariate-results
+
+@tbl-bivariate-results2
+
+```{python}
+#| label: tbl-bivariate-results2
+#| tbl-cap: "Summary of Mann-Whitney U Test"
+#| message: false
+#| echo: false
+#| 
+# Print the Mann-Whitney results as a table
+print(mannwhitney_results.to_markdown(index=False, floatfmt=".3"))
+```
+
+### Baseline Model Training and Evaluation
+## Modeling and Evaluation
+
+#### Train-Test Split 
+The data was split into stratified training (60%), validation (20%), and testing (20%) sets to ensure an even distribution of positive and negative cases across each partition.
+```{python}
+#| label: model-preprocessor
+#| message: false
+#| echo: false
+
+from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score, GridSearchCV
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from imblearn.over_sampling import SMOTE
+from imblearn.pipeline import Pipeline as ImbPipeline
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.metrics import average_precision_score, roc_auc_score, classification_report, confusion_matrix, precision_recall_curve
+import shap
+
+# Define features-x and target-y
+X = data.drop(columns=['Biopsy', 'STDs:AIDS','STDs:cervical condylomatosis'])
+y = data['Biopsy']
+
+# Split the data into training, validation, and test sets
+# The stratify=y to maintian class distribution of the target variable in all three subsets.
+X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.4, random_state=42, stratify=y)
+X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42, stratify=y_temp)
+
+
+# Display the final split sizes for verification
+print("\nFinal Split Sizes:")
+print(f"Training set: {X_train.shape[0]} samples")
+print(f"Validation set: {X_val.shape[0]} samples")
+print(f"Testing set: {X_test.shape[0]} samples")
+
+
+# Update numerical and categorical columns for preprocessing
+num_var = X_train.select_dtypes(exclude='category').columns.tolist()
+cat_var = X_train.select_dtypes(include='category').columns.tolist()
+
+#Imputation and Standard Scaling for Numerical Features
+# This pipeline first fills missing values using the median and then scales the data.
+num_transformer = Pipeline(steps=[
+    ('imputer', SimpleImputer(strategy='median')),
+    ('scaler', StandardScaler())
+])
+
+#Imputation and One-Hot Encoding for Categorical Features
+# This pipeline fills missing values with the most frequent value and then converts them to a numerical format.
+cat_transformer = Pipeline(steps=[
+    ('imputer', SimpleImputer(strategy='most_frequent')),
+    ('onehot', OneHotEncoder(handle_unknown='ignore'))
+])
+
+# Combine preprocessing steps using ColumnTransformer
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', num_transformer, num_var),
+        ('cat', cat_transformer, cat_var)
+    ])
+
+#Define and Evaluate Models using Cross-Validation
+models = [
+    ('Logistic Regression', LogisticRegression(random_state=42)),
+    ('K-Nearest Neighbors', KNeighborsClassifier()),
+    ('Decision Tree', DecisionTreeClassifier(random_state=42)),
+    ('Random Forest', RandomForestClassifier(random_state=42)),
+    ('Gradient Boosting', GradientBoostingClassifier(random_state=42))
+]
+
+```
+
+
+#### Preprocessing Pipeline
+ A preprocessing pipeline was defined to handle both numerical and categorical features by using imputation, scaling, and one-hot encoding.
+ 
+#### Dealing with Imbalance
+ We used SMOTE oversampling technique to address class imbalance before training.
+
+### Model Selction
+We evaluated five different classification machine learning models:
+1. Logistic Regression (LR): A simple, interpretable model chosen as a baseline for performance comparison.
+2. K-Nearest Neighbors (KNN): A non-parametric model included to capture complex, non-linear relationships.
+3. Decision Tree (DCT): Tree and, rule-based model that serves as the building block for more advanced ensemble methods.
+4. Random Forest (RF): A powerful ensemble model that reduces overfitting by combining multiple decision trees.
+5. Gradient Boosting (GB): A high-performance ensemble model that builds trees sequentially, with each new tree correcting the errors of the previous one, often leading to excellent predictive performance.
+ 
+The models are compared using 5-fold cross-validation on the training set, with average precision as the primary evaluation metric
+
+```{python}
+#| label: training
+#| message: false
+#| echo: false
+
+# Training
+# ---------- Baseline CV on TRAIN ----------
+print("\n--- Baseline Model Comparison (on Training Set) ---")
+results = {}
+for name, model in models:
+    pipeline = ImbPipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('smote', SMOTE(random_state=42)),
+        ('classifier', model)
+    ])
+
+    SCORING = 'average_precision' 
+    cv_scores = cross_val_score(pipeline, X_train, y_train, cv=StratifiedKFold(n_splits=5, shuffle=True, random_state=42), scoring=SCORING, n_jobs=-1)
+    results[name] = np.mean(cv_scores)
+    print(f"{name}: mean {SCORING} = {np.mean(cv_scores):.4f} (±{np.std(cv_scores):.4f})")
+
+```
+
+GB was the best untuned learner (mean AP 0.106 ± 0.064), with RF close behind (0.092 ± 0.022). 
+
+### Model Hyperparameter Tuning - Using GridSearchCV
+```{python}
+#| label: hyperparameter-tuning
+#| message: false
+#| echo: false
+
+# --------- Hyper-tune ALL models on the combined TRAIN+VAL set using cross-validation ----------
+# Build a fixed TRAIN/VAL split for GridSearchCV 
+X_train_val = pd.concat([X_train, X_val], axis=0)
+y_train_val = pd.concat([y_train, y_val], axis=0)
+cv_tune = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+
+
+param_grids = {
+    'Logistic Regression': {
+        'classifier__solver': ['saga', 'liblinear'],
+        'classifier__penalty': ['l1', 'l2', 'elasticnet'],
+        'classifier__l1_ratio': [0.0, 0.5, 1.0],
+        'classifier__C': [0.001, 0.01, 0.1, 1, 10, 100],
+        'classifier__class_weight': [None, 'balanced'],
+        'smote__k_neighbors': [3, 5]
+    },
+    'K-Nearest Neighbors': {
+        'classifier__n_neighbors': [3, 5, 7, 11, 21],
+        'classifier__weights': ['uniform', 'distance'],
+        'classifier__p': [1, 2],
+        'smote__k_neighbors': [3, 5]
+    },
+    'Decision Tree': {
+        'classifier__max_depth': [None, 10, 20, 30],
+        'classifier__min_samples_split': [2, 5, 10],
+        'classifier__min_samples_leaf': [1, 2, 4],
+        'classifier__class_weight': [None, 'balanced'],
+        'smote__k_neighbors': [3, 5]
+    },
+    'Random Forest': {
+        'classifier__n_estimators': [300, 600, 1000],
+        'classifier__max_depth': [None, 10, 20],
+        'classifier__min_samples_split': [2, 5, 10],
+        'classifier__min_samples_leaf': [1, 2, 4],
+        'classifier__max_features': ['sqrt', 'log2', 0.5],
+        'classifier__bootstrap': [True],
+        'classifier__class_weight': [None, 'balanced', 'balanced_subsample'],
+        'smote__k_neighbors': [3, 5]
+    },
+    'Gradient Boosting': {
+        'classifier__n_estimators': [200, 400],
+        'classifier__learning_rate': [0.01, 0.05, 0.1],
+        'classifier__max_depth': [2, 3],
+        'classifier__subsample': [0.6, 0.8, 1.0],
+        'classifier__min_samples_leaf': [1, 5, 10],
+        'smote__k_neighbors': [3, 5]
+    }
+}
+
+best_tuned_models = {}
+for name in models:
+    # Get the base model 
+    #top_model = [model for m_name, model in models if m_name == name][0]
+
+    # pipeline with SMOTE
+    pipeline = ImbPipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('smote', SMOTE(random_state=42)),
+        ('classifier', model)
+    ])
+
+  
+val_score = []
+best_by_model = {}
+
+print("\n--- Grid Search  ---")
+for name, base_model in models:
+    if name == 'Logistic Regression':
+        base_model = LogisticRegression(random_state=42, solver='saga')
+
+    pipe = ImbPipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('smote', SMOTE(random_state=42)),
+        ('classifier', base_model)
+    ])
+    grid = GridSearchCV(pipe,
+                        param_grids.get(name, {}),
+                        cv=cv_tune, 
+                        scoring=SCORING,
+                        n_jobs=-1,
+                        refit=True)
+
+    grid.fit(X_train_val, y_train_val)
+
+    best_by_model[name] = (grid.best_estimator_, grid.best_params_, float(grid.best_score_))
+    print(f"{name}: best VAL {SCORING}={grid.best_score_:.4f} | params={grid.best_params_}")
+    val_score.append((name, float(grid.best_score_), grid.best_params_))
+
+val_score.sort(key=lambda x: x[1], reverse=True)
+
+print("\n--- Averger Precision ---")
+for name, score, params in val_score:
+    print(f"{name:18s} {score:.4f}")
+
+best_name, best_val_score, best_params = val_score[0]
+best_estimator = best_by_model[best_name][0]
+print(f"\nSelected model: {best_name} (VAL {SCORING}={best_val_score:.4f})")
+```
+
+After grid search, Gradient Boosting remianed to the top (AP 0.191), followed by KNN (0.187), then RF (0.172), DCT (0.127), LR (0.1113).
+
+### Final Model Evaluation
+```{python}
+#| label: final-evaluation
+#| message: false
+#| echo: false
+ 
+# --- TEST evaluation  ---
+y_test_prob = best_estimator.predict_proba(X_test)[:, 1]
+y_test_pred = (y_test_prob >= 0.5).astype(int)
+
+print("\n--- FINAL TEST METRICS ---")
+print(f"Average Precision (PR-AUC): {average_precision_score(y_test, y_test_prob):.3f}")
+print(f"ROC-AUC: {roc_auc_score(y_test, y_test_prob):.3f}")
+print(classification_report(y_test, y_test_pred, digits=3))
+
+cm = confusion_matrix(y_test, y_test_pred, labels=[0,1])
+tn, fp, fn, tp = cm.ravel()
+spec = tn/(tn+fp) if (tn+fp) else 0.0
+sens = tp/(tp+fn) if (tp+fn) else 0.0
+print(f"Confusion matrix:\n TN={tn} FP={fp}\n FN={fn} TP={tp}")
+print(f"Specificity={spec:.3f} | Sensitivity={sens:.3f} (Recall)")
+
+```
+
+The final GB model was evaluated on a held-out test set, where it yielded an AP (PR-AUC) of 0.166 and an ROC-AUC of 0.51. The confusion matrix revealed that while the model has high specificity (0.974), correctly identifying most negative cases, its sensitivity (0.273) is very low, as it missed 1 of the 11 true positive cases. Overall, the tuned GB generalizes modestly (VAL AP 0.191 → TEST AP 0.166); Hence, overfitting is limited. 
+
+## Feature Importance
+
+```{python}
+#| label: tab-one
+#| fig-cap:  "Relationship between Biopsy and Select Variables"
+#| message: false
+#| echo: false
+#| result: hide
+
+# get the trained model
+final_model = best_estimator.named_steps['classifier']
+
+# Get the preprocessed validation data to use as the background dataset
+X_val_processed = best_estimator.named_steps['preprocessor'].transform(X_val)
+
+# Create a SHAP Tree Explainer
+explainer = shap.TreeExplainer(final_model)
+
+# Process the test data
+X_test_processed = best_estimator.named_steps['preprocessor'].transform(X_test)
+
+# Calculate SHAP values for the test set
+shap_values = explainer.shap_values(X_test_processed)
+
+# Get the feature names from the preprocessor
+feature_names = best_estimator.named_steps['preprocessor'].get_feature_names_out()
+
+# Calculate the mean absolute SHAP value for each feature
+mean_shap_values = np.mean(np.abs(shap_values), axis=0)
+
+# Create a DataFrame to store the results
+shap_importance_df = pd.DataFrame({
+    'feature': feature_names,
+    'mean_shap_value': mean_shap_values
+})
+
+# Sort the features by their mean SHAP value
+shap_importance_df = shap_importance_df.sort_values(
+    by='mean_shap_value', 
+    ascending=False
+).reset_index(drop=True)
+
+print("Top 15 Features by Mean Absolute SHAP Value:")
+print(shap_importance_df.head(15))
+
+```
+
+
+```{python}
+#| label: fig-figure-5
+#| fig-cap:  "Relationship between Biopsy and Select Variables"
+#| message: false
+#| echo: false
+
+# Create a plot to summarize the overall feature importance
+shap.summary_plot(shap_values, X_test_processed, feature_names=feature_names)
+```
+
+To address our second aim, which is to identify important explanatory variables likely driving the prediction. The Mean absolute SHAP indicated that predictions were dominated by sexual-exposure variables—number of sexual partners, age at first intercourse, and years since first intercourse—followed by number of pregnancies and hormonal contraceptive exposure (both years of use and ever/never status). Age contributed an additional signal, while STD burden/timing and smoking/IUD features provided smaller effects.
+
+- Number of Sexual Partners: high values (red) cluster right ⇒ more partners ↑ risk.
+- Age at first intercourse: low values lean right ⇒ earlier age of coitus ↑ risk.
+- Years since first intercourse: higher values trend right ⇒ longer exposure window ↑ risk.
+- Reproductive history: More pregnancies push right ⇒ higher risk signal.
+- Hormonal contraception: Years of use and ever/never - longer duration ↑ risk.
+- Age: older age tends to increase predicted risk.
+- STD burden/timing: more diagnoses push right; recent diagnosis (shorter “time since last diagnosis,” blue) also shifts right—consistent with biology.
+- Smoking & IUD: smaller effects; smoking leans right.
+
+
+## Conclusion
+This project successfully demonstrates that a machine learning model, specifically a Gradient Boosting Classifier, can effectively predict the likelihood of a positive cervical cancer biopsy. By utilizing a robust methodology that accounts for significant class imbalance, the model provides a strong foundation for data-driven risk assessment.
+
+While our model achieved an ROC-AUC of 0.510, indicating a moderate ability to discriminate between positive and negative cases, its high specificity (0.974) and low sensitivity (0.09) reveal a critical trade-off. This means the model is highly reliable when it predicts that a patient does not have cervical pathology (few false positives). Still, it misses a significant portion of the actual positive cases (resulting in many false negatives). At this threshold, it functions better as a triage aid than as a replacement for diagnostic testing.
+
+For practical application, the model's utility could be enhanced by focusing on improving its ability to detect the rare positive cases. Future work should explore strategies such as:
+  1. Threshold calibration to prioritize sensitivity over specificity.
+  2. Optimizing the model with a recall-focused objective function during training.
+  3. Incorporating richer clinical variables (e.g., specific HPV strain information) to improve the model's predictive power.
+Ultimately, this work highlights the potential for machine learning to assist in clinical decision-making by identifying key risk factors and providing a more informed basis for targeted follow-up.
+
+### Limitation
+The study has several limitations. First, the model was built and evaluated on a single-center dataset. Its performance has not been validated on an external, independent dataset, which means it may not perform as well on different patient populations or in other clinical/local settings. Secondly, the model relies exclusively on demographic, behavioral, and self-reported STD history features that may reflect local practices and does not incorporate richer clinical variables, such as specific HPV viral types or Pap smear results, which are highly predictive in real-world diagnostics. Thirdly, despite using SMOTE to address the significant class imbalance, the final model still struggles to reliably identify the minority class, as evidenced by its low recall. Finally, the low sensitivity of the model is a critical flaw, and its moderate predictive power is only slightly better than random chance to effectively discriminate between patients with and without cervical pathology.
