@@ -24,6 +24,7 @@ jupyter: python3
 #| label: load-pkgs
 #| message: false
 #| echo: false
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -159,7 +160,7 @@ plt.show()
 
 ## Analysis Plan
 
-Missing values will be evaluated and imputed using multiple strategies like the mean/mode imputation, KNN imputation, multiple imputation or completed removal depending on missingness patterns. Variables will transformed, normalized and encode appropriately. We will apply different classification algorithms and compare them using cross-validation and performance metrics like ROC-AUC, F1-Score, Precision, Recall to determine the best model. Proposed algorithms include Logistic Regression, Random Forest, XGBoost, Support Vector Machine.
+Missing values will be evaluated and imputed using multiple strategies like the mean/mode imputation, or completed removal depending on missingness patterns. Variables will transformed, normalized and encode appropriately. We will apply different classification algorithms and compare them using cross-validation and performance metrics like ROC-AUC, F1-Score, Precision, Recall to determine the best model. Proposed algorithms include Logistic Regression, Random Forest, and XGBoost.
 
 For Feature importance and interpretation, we will use SHAP values for interpretability and visualize the top contributing risk factors.
 
@@ -178,7 +179,7 @@ Since this is a single author project, I will be responsible for all aspects of 
 ## Repo Organization
 
 | Path/File | Purpose and Description |
-|---------------------|---------------------------------------------------|
+|--------------------------|----------------------------------------------|
 | .github/ | Contains GitHub-specific configurations, including workflows, actions, and issue templates that automate and streamline repository management. |
 | \_extra/ | Serves as a flexible storage space for miscellaneous or supplementary files that do not fit into other predefined project categories. |
 | \_freeze/ | Stores frozen environment snapshots, capturing the exact package versions and setup used during specific stages of the project for reproducibility. |
