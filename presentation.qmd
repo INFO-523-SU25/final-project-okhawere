@@ -11,7 +11,6 @@ title-slide-attributes:
 format:
   revealjs: 
      theme:  ['data/customtheming.scss']
-     logo:   Cervical CA image 2.png
      footer: "INFO 523 Final Project | Kennedy"
      transition: fade
      slide-number: true
@@ -73,6 +72,8 @@ plt.show()
 
 ## Baseline Model - Reported CV means (Average Precision)
 
+Models: Logistic Regression, Random Forest, XGboost
+
 ```{python}
 
 baseline_cv = {
@@ -112,7 +113,7 @@ plt.show()
 
 ```
 
-## Test Evaluation (XGBoost Model)
+## Test Evaluation (Logistic Regression Model)
 
 ```{python}
 # Test data
