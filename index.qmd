@@ -394,9 +394,8 @@ def bivariate_tests(data):
 mannwhitney_results, chi2_results = bivariate_tests(data)
 
 # Print the Chi-squared results as a table
-print(chi2_results.to_markdown(index=False))
-
-
+table1= chi2_results.to_markdown()
+print(table1)
 ```
 
 The presence of any STD, STDs:condylomatosis, STDs:vulvo-perineal condylomatosis, and STDs:HIV all showed a significant relationship with the biopsy outcome (Table 1). Simialar,the number and timing of STDs were the only numerical variables that showed a statistically significant difference between the two groups. Specifically, STDs (number), STDs: Number of diagnosis, STDs: Time since first diagnosis, and STDs: Time since last diagnosis all had very low p-values (p<0.05), indicating that these factors are significantly different in the positive biopsy group (Table 2).
@@ -411,7 +410,8 @@ The presence of any STD, STDs:condylomatosis, STDs:vulvo-perineal condylomatosis
 #| echo: false
 #| 
 # Print the Mann-Whitney results as a table
-print(mannwhitney_results.to_markdown(index=False, floatfmt=".3"))
+table2= mannwhitney_results.to_markdown()
+print(table2)
 ```
 
 ### Baseline Model Training and Evaluation
