@@ -161,11 +161,7 @@ print(f"Precision (PPV): {test_metrics['Precision_Pos']:.3f} | Accuracy: {test_m
 
 ## Feature Importance (SHAP Analysis)
 
-::::: columns
-::: {.column width="40%"}
-![](images/shap.png)
-:::
-
+:::: columns
 ::: {.column width="60%"}
 -   Hormonal Contraceptives (years) was the strongest driver. High values tend to increase predicted risk.
 -   STDs: Number of diagnoses — more diagnoses push predictions up.
@@ -174,7 +170,7 @@ print(f"Precision (PPV): {test_metrics['Precision_Pos']:.3f} | Accuracy: {test_m
 -   STD :Time since last diagnosis — more recent STD tend to increase risk.
 -   Number of pregnancies increase the risk
 :::
-:::::
+::::
 
 # Conclusion
 
