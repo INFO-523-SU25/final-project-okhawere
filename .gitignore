@@ -12,6 +12,10 @@ env/
 .venv/
 ENV/
 
+# .gitignore
+*_files/
+presentation_files/
+
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 

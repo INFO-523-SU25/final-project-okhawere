@@ -69,7 +69,6 @@ print("Top Rows:", data.head())
 
 # Calculate the count of missing values per column
 missing = data.isna().sum()
-missing1 = missing.nlargest(15)
 
 ```
 
@@ -125,8 +124,6 @@ print('Data Summary:', data.describe())
 The population for this study consists of `{python} data.shape[0]` female patients from the Hospital Universitario de Caracas in Caracas, Venezuela. The total number variables in the dataset is `{python} data.shape[1]`.
 
 ### Date cleaning
-
-Total missing per column: `{python} missing1`
 
 **Dropped Columns:** Columns containing diagnostic information that would cause data leakage, high correlation and rare or missing events were removed.
 
