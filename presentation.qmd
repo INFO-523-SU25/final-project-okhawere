@@ -68,30 +68,13 @@ plt.show()
 
 # Data Cleaning
 
-#
-```{mermaid}
-%%| fig-width: 20
-sequenceDiagram
-    participant Data
-    participant Processor
+* **Handling Duplicates**: 23 participants deleted
 
-    Note over Data, Processor: Data Cleaning Pipeline
-    
-    Data->>Processor: Raw Dataset
-    Processor->>Processor: Drop 23 duplicate participants
-    Processor->>Processor: Remove leakage & high correlation columns (18 Columns)
-    Processor->>Processor: Eliminate rare/missing feature columns 
-    
-    Note right of Processor: Handling Systematic Missingness
-    Processor->>Processor: Impute missing values<br/>based on common variables
-    
-    Note right of Processor: Feature Engineering
-    Processor->>Processor: Create "Years since first intercourse"
-    
-    Processor-->>Data: ✅Cleaned & Enhanced Dataset
+* **Dropped Columns**: 18 columns dropped due to potential data leakage, high correlation and extremely rare events
 
-```
+* **Handling Systematic Missingness**: Imputed missing rows and columns based on column proxies
 
+* **Feature Engineering**: Years since first intercourse, any history of condylomatosis
 
 # Modeling
 
