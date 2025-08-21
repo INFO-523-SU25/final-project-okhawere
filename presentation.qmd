@@ -32,19 +32,17 @@ import matplotlib.pyplot as plt
 sns.set_theme(style="white")
 ```
 
-# Introduction
+## Introduction
 
 -   Cervical cancer is preventable but persists where vaccination/screening access is limited
-
--   We evaluate whether non-invasive history (demographics, sexual/reproductive history, contraception, smoking, STDs) can triage patients at higher risk of biopsy-positive disease
+-   We evaluated whether non-invasive history (demographics, sexual/reproductive history, contraception, smoking, STDs) can triage patients at higher risk of biopsy-positive disease
 
 ## Research Questions
 
 -   Can we accurately predict cervical cancer biopsy outcomes using only non-invasive risk factors and lifestyle history?
-
 -   Which factor contribute the most to cervical cancer risk?
 
-# Data
+## Data
 
 -   The dataset was collected at 'Hospital Universitario de Caracas' in Caracas, Venezuela.
 
@@ -68,11 +66,46 @@ plt.show()
 
 ```
 
+# Data Cleaning
+
+#
+```{mermaid}
+%%| fig-width: 20
+sequenceDiagram
+    participant Data
+    participant Processor
+
+    Note over Data, Processor: Data Cleaning Pipeline
+    
+    Data->>Processor: Raw Dataset
+    Processor->>Processor: Drop 23 duplicate participants
+    Processor->>Processor: Remove leakage & high correlation columns (18 Columns)
+    Processor->>Processor: Eliminate rare/missing feature columns 
+    
+    Note right of Processor: Handling Systematic Missingness
+    Processor->>Processor: Impute missing values<br/>based on common variables
+    
+    Note right of Processor: Feature Engineering
+    Processor->>Processor: Create "Years since first intercourse"
+    
+    Processor-->>Data: ✅Cleaned & Enhanced Dataset
+
+```
+
+
 # Modeling
 
-## Baseline Model - Reported CV means (Average Precision)
+## Modeling Approach
 
-Models: Logistic Regression, Random Forest, XGboost
+1.  **Preprocessing**: Numerical features were imputed with the median and scaled. Categorical features were one-hot encoded.
+
+2.  **Class Imbalance**: **SMOTE** was applied to the training data to deal with class imbalance.
+
+3.  **Evaluation**: A stratified **train(60%)/validation(20%)/test split(20%)** was used to ensure an unbiased evaluation of the final model.
+
+4.  **Models:** Logistics Regression, Random Forests, XGboost
+
+## Baseline Model - Reported CV means (Average Precision)
 
 ```{python}
 
@@ -92,7 +125,6 @@ plt.ylabel("Mean Average Precision (CV)")
 plt.title("Baseline Model Comparison (Train CV)")
 plt.tight_layout()
 plt.show()
-
 ```
 
 ## Validation Leaderbaord (Average Precision)
@@ -163,11 +195,11 @@ print(f"Precision (PPV): {test_metrics['Precision_Pos']:.3f} | Accuracy: {test_m
 
 :::: columns
 ::: {.column width="60%"}
--   Hormonal Contraceptives (years) was the strongest driver. High values tend to increase predicted risk.
--   STDs: Number of diagnoses — more diagnoses push predictions up.
--   Years since first intercourse — longer history generally increases risk.
+-   Hormonal Contraceptives (years) was the strongest driver.
+-   STDs: Number of diagnoses.
+-   Longer years since first intercourse
 -   Age: older age trends up.
--   STD :Time since last diagnosis — more recent STD tend to increase risk.
+-   Recent STD :Time since last diagnosis.
 -   Number of pregnancies increase the risk
 :::
 ::::
@@ -177,13 +209,15 @@ print(f"Precision (PPV): {test_metrics['Precision_Pos']:.3f} | Accuracy: {test_m
 -   The model is not a definitive diagnostic tool but rather a triage aid to prioritize patients for further screening
 -   **Future Work:**
     -   The model's performance could be improved with a larger, more balanced dataset
-    -   Implementing a cost-sensitive learning approach could penalize misclassifying positive cases more heavily
+    -   Theoretical and biologically plausible clinical features, like HPV genotype or cytology, can lift the signal
     -   Additional feature engineering and domain expertise could further enhance predictive power
 
 ## Limitations
 
 -   Lack of Generalizability
 -   Modest Sensitivity (Recall)
--   Moderate Predictive Power: Low ROC-AUC
+-   Moderate Predictive Power
 -   Data Imbalance: Despite using SMOTE
 -   Limited Feature Set
+
+## Thank You!

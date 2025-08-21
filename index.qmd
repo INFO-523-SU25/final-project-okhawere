@@ -24,7 +24,7 @@ Early identification of patients at risk for biopsy-confirmed cervical pathology
 
 ## Introduction
 
-Cervical cancer remains a significant health concern, particularly in settings where access to standard screening and vaccination is limited. Current diagnostic pathways, which often involve extensive follow-up procedures like colposcopy and biopsy, can strain clinical resources, leading to delays for high-risk patients. To address this, a non-invasive tool that uses information already gathered during patient intake, such as demographics, sexual history, and smoking habits, could help clinicians prioritize follow-up evaluations. In view of the above, using the UCI cervical risk-factors dataset, this study seeks to evaluates the potential of such a lightweight prediction model to identify patients at high risk of a positive biopsy without adding extra clinical burden, and factors contributing to most of the risk. Our aim is to develop a tool that functions as a triage aid, ensuring limited resources are directed toward those who are most likely to benefit from further diagnostic steps.
+Cervical cancer remains a significant health concern, particularly in settings where access to standard screening and vaccination is limited. Current diagnostic pathways, which often involve extensive follow-up procedures like colposcopy and biopsy, can strain clinical resources, leading to delays for high-risk patients. To address this, a non-invasive tool that uses information already gathered during patient intake, such as demographics, sexual history, and smoking habits, could help clinicians prioritize follow-up evaluations. Given the above, using the UCI cervical risk-factors dataset, this study seeks to evaluate the potential of such a lightweight prediction model to identify patients at high risk of a positive biopsy without adding extra clinical burden, and factors contributing to most of the risk. We aim to develop a tool that functions as a triage aid, ensuring limited resources are directed toward those who are most likely to benefit from further diagnostic steps.
 
 ```{python}
 #| label: import-packages
@@ -42,7 +42,7 @@ from scipy.stats import chi2_contingency, mannwhitneyu
 #| label: load-dataset
 #| message: false
 #| echo: false
-#| results: hide
+#| output: false
 
 def load_data(path):
   """
@@ -69,6 +69,7 @@ print("Top Rows:", data.head())
 
 # Calculate the count of missing values per column
 missing = data.isna().sum()
+missing1 = missing.nlargest(15)
 
 ```
 
@@ -78,7 +79,7 @@ missing = data.isna().sum()
 #| label: Data-cleaning-1
 #| message: false
 #| echo: false
-#| results: hide
+#| output: false
 
 #Check for duplicates
 duplicated= data.duplicated().sum()
@@ -125,21 +126,27 @@ The population for this study consists of `{python} data.shape[0]` female patien
 
 ### Date cleaning
 
-Total missing per column: \|Age 0\| \|Number of sexual partners 26\| \|First sexual intercourse 7\| \|Num of pregnancies 56\| \|Smokes 13\| \|Smokes (years) 13\| \|Smokes (packs/year) 13\| \|Hormonal Contraceptives 108\| \|Hormonal Contraceptives (years) 108\| \|IUD 117\| \|IUD (years) 117\| \|STDs 105\| \|STDs (number) 105\| \|STDs:condylomatosis 105\| \|STDs:cervical condylomatosis 105\| \|STDs:vaginal condylomatosis 105\| \|STDs:vulvo-perineal condylomatosis 105\| \|STDs:syphilis 105\| \|STDs:pelvic inflammatory disease 105\| \|STDs:genital herpes 105\| \|STDs:molluscum contagiosum 105\| \|STDs:AIDS 105\| \|STDs:HIV 105\| \|STDs:Hepatitis B 105\| \|STDs:HPV 105\| \|STDs: Number of diagnosis 0\| \|STDs: Time since first diagnosis 787\| \|STDs: Time since last diagnosis 787\| \|Dx:Cancer 0\| \|Dx:CIN 0\| \|Dx:HPV 0\| \|Dx 0\| \|Hinselmann 0\| \|Schiller 0\| \|Citology 0\| \|Biopsy 0\|
+Total missing per column: `{python} missing1`
 
-**Dropped Columns:** Columns containing diagnostic information that would cause data leakage, high correlation and rare or missing events were removed. - Hinselmann, Schiller, Citology, Dx, Dx:HPV, Dx:CIN, Dx:Cancer - STDs: Time since first diagnosis, STDs (number) - STDs:AIDS, STDs:cervical condylomatosis, STDs:pelvic inflammatory disease, STDs:genital herpes, STDs:molluscum contagiosum, STDs:Hepatitis B, STDs:HPV, STDs:vaginal condylomatosis, STDs:condylomatosis, STDs:vulvo-perineal condylomatosis
+**Dropped Columns:** Columns containing diagnostic information that would cause data leakage, high correlation and rare or missing events were removed.
+
+1.  Hinselmann, Schiller, Citology, Dx, Dx:HPV, Dx:CIN, Dx:Cancer
+
+2.  STDs: Time since first diagnosis, STDs (number)
+
+3.  STDs:AIDS, STDs:cervical condylomatosis, STDs:pelvic inflammatory disease, STDs:genital herpes, STDs:molluscum contagiosum, STDs:Hepatitis B, STDs:HPV, STDs:vaginal condylomatosis, STDs:condylomatosis, STDs:vulvo-perineal condylomatosis
 
 **Dropped Duplicates:** A total of `{python} duplicated` total duplicate rows were identified and removed.
 
 **Correcting Implausible Values:** Records where a patient's age at first sexual intercourse was greater than their current age were corrected. The inconsistent values were replaced with missing values (np.nan).
 
-#### Missing Data and Feature Engineering
+#### **Missing Data and Feature Engineering**
 
 ```{python}
 #| label: Data-cleaning-2
 #| message: false
 #| echo: false
-#| results: hide
+#| output: false
 
 #Dealing with systematic missing data
 columns_to_fill = data.loc[:, 'STDs':'STDs: Time since last diagnosis'].columns
@@ -162,18 +169,19 @@ if condy_cols:
 
 ```
 
-1.  Dealing with Systematic Missing Data Patients with zero recorded STDs, the associated fields (such as "Time since first diagnosis" or other specific STD types) were used to impute missing.
+1.  Dealing with Systematic Missing Data: Patients with zero recorded STDs, the associated fields (such as "Time since first diagnosis" or other specific STD types) were used to impute missing.
 
-2.  Feature Engineering We created a new variable Years since first intercourse.This new feature is calculated by subtracting the First sexual intercourse age from the patient's Age.
+2.  Feature Engineering:
 
-data\['Years since first intercourse'\] = data\['Age'\] - data\['First sexual intercourse'\]
+-   Years since first intercourse: This new feature is calculated by subtracting the First sexual intercourse age from the patient's Age.
+-   Any history of condylomatosis: presence of any condylomatosis
 
 ```{python}
 #| label: fig-figure-0
 #| fig-cap:  "Distribution of Numerical variable"
 #| message: false
 #| echo: false
-#| results: hide
+#| output: false
 
 #correlation between numberical variable
 sns.heatmap(data[num_var].corr(), cmap='vlag')
@@ -195,7 +203,7 @@ data = data.drop(columns=VeryRare)
 
 ### Target Variable
 
-The target variable, biopsy test (1 indicates cancer detected, 0 indicates no cancer), is the most definitive indicator for cervical cancer. The majority of the patients (approximately `{python} int(round((data['Biopsy'] == 1).mean() * 100))`%) have a positive biopsy result, suggestive of a potential imbalance in the distribution of cancer diagnosis [Figure @fig-figure-1].
+The target variable, biopsy test (1 indicates cancer detected, 0 indicates no cancer), is the most definitive indicator for cervical cancer. The majority of the patients (approximately `{python} int(round((data['Biopsy'] == 1).mean() * 100))`%) have a positive biopsy result, suggestive of a potential imbalance in the distribution of cancer diagnosis.
 
 ```{python}
 #| label: fig-figure-1
@@ -216,7 +224,7 @@ plt.show()
 #| fig-cap:  "Distribution of Numerical variable"
 #| message: false
 #| echo: false
-#| results: hide
+#| output: false
 
 #update cat_var 
 cat_var = data.select_dtypes(include=['object', 'category'])
@@ -257,7 +265,7 @@ plt.show()
 #| fig-cap:  "Distribution of Categorical Variables"
 #| message: false
 #| echo: false
-#| results: hide
+#| output: false
 
 # Visualization of Categorical variables
 
@@ -288,7 +296,7 @@ plt.show()
 
 ### Relationship of Biopsy and Select Covariates
 
-In the cohort, patients with a positive biopsy tend to be older, have a longer duration since their first sexual intercourse, and a higher number of sexual partners. Additionally, longer periods of smoking and hormonal contraceptive use are also linked to a higher risk. @fig-figure-4
+In the cohort, patients with a positive biopsy tend to be older, have a longer duration since their first sexual intercourse, and a higher number of sexual partners. Additionally, longer periods of smoking and hormonal contraceptive use are also linked to a higher risk.
 
 ```{python}
 #| label: fig-figure-4
@@ -388,8 +396,6 @@ print(table1)
 
 The presence of any STD, STDs:HIV, any condylomatosis were associated with significant relationship with the biopsy outcome (Table 1). Simialar,the number and timing of STDs were the only numerical variables that showed a statistically significant difference between the two groups. Specifically, STDs: Number of diagnosis, and STDs: Time since first diagnosis all had very low p-values (p\<0.05), indicating that these factors are significantly different in the positive biopsy group (Table 2).
 
-@tbl-bivariate-results
-
 ```{python}
 #| label: tbl-bivariate-results2
 #| tbl-cap: "Summary of Mann-Whitney U Test"
@@ -401,13 +407,11 @@ table2= mannwhitney_results
 print(table2)
 ```
 
-@tbl-bivariate-results2
-
 ### Baseline Model Training and Evaluation
 
 ## Modeling and Evaluation
 
-#### Train-Test Split
+#### **Train-Test Split**
 
 The data was split into stratified training (60%), validation (20%), and testing (20%) sets to ensure an even distribution of positive and negative cases across each partition.
 
@@ -482,17 +486,23 @@ models = [
 ]
 ```
 
-#### Preprocessing Pipeline
+#### **Preprocessing Pipeline**
 
 A preprocessing pipeline was defined to handle both numerical and categorical features by using imputation, scaling, and one-hot encoding.
 
-#### Dealing with Imbalance
+#### **Dealing with Imbalance**
 
 We used SMOTE oversampling technique to address class imbalance before training.
 
-### Model Selction
+### Model Selection
 
-We evaluated there different classification machine learning models: 1. Logistic Regression (LR): A simple, interpretable model chosen as a baseline for performance comparison. 2. Random Forest (RF): A powerful ensemble model that reduces overfitting by combining multiple decision trees. 3. XGBoost (XGB): A highly efficient and scalable implementation of the gradient boosting algorithm. It is often the preferred choice for structured data due to its superior speed and performance.
+We evaluated there different classification machine learning models:
+
+1.  Logistic Regression (LR): A simple, interpretable model chosen as a baseline for performance comparison.
+
+2.  Random Forest (RF): A powerful ensemble model that reduces overfitting by combining multiple decision trees.
+
+3.  XGBoost (XGB): A highly efficient and scalable implementation of the gradient boosting algorithm. It is often the preferred choice for structured data due to its superior speed and performance.
 
 The models are compared using 5-fold cross-validation on the training set, with average precision as the primary evaluation metric
 
@@ -655,8 +665,7 @@ The final LR model was evaluated on a test set, where it yielded an AP (PR-AUC) 
 #| fig-cap:  "Relationship between Biopsy and Select Variables"
 #| message: false
 #| echo: false
-#| result: hide
-
+#| output: false
 # 1. Get the preprocessor from the best pipeline
 preprocessor = best_estimator.named_steps['preprocessor']
 
