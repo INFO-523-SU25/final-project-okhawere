@@ -61,7 +61,7 @@ prev = data["Biopsy"].mean() if "Biopsy" in data.columns else np.nan
 
 print(f"Rows: {N:,}  |  Positives (Biopsy=1): {prev:.1%}")
 
-plt.figure(figsize=(8, 6))
+plt.figure(figsize=(7, 5))
 sns.countplot(x='Biopsy', data=data, hue = 'Biopsy')
 plt.title('Distribution of the Biopsy in the Cohort')
 plt.xlabel('Biopsy Result (0: No, 1: Yes)')
