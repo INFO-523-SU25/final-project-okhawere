@@ -33,10 +33,13 @@ import matplotlib.pyplot as plt
 sns.set_theme(style="white")
 ```
 
+
 ## Introduction
 
 -   Cervical cancer is preventable but persists where vaccination/screening access is limited
+
 -   We evaluated whether non-invasive history (demographics, sexual/reproductive history, contraception, smoking, STDs) can triage patients at higher risk of biopsy-positive disease
+
 
 ## Research Questions
 
