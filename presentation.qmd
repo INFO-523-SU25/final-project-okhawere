@@ -68,13 +68,13 @@ plt.show()
 
 # Data Cleaning
 
-* **Handling Duplicates**: 23 participants deleted
+-   **Handling Duplicates**: 23 participants deleted
 
-* **Dropped Columns**: 18 columns dropped due to potential data leakage, high correlation and extremely rare events
+-   **Dropped Columns**: 18 columns dropped due to potential data leakage, high correlation and extremely rare events
 
-* **Handling Systematic Missingness**: Imputed missing rows and columns based on column proxies
+-   **Handling Systematic Missingness**: Imputed missing rows and columns based on column proxies
 
-* **Feature Engineering**: Years since first intercourse, any history of condylomatosis
+-   **Feature Engineering**: Years since first intercourse, any history of condylomatosis
 
 # Modeling
 
