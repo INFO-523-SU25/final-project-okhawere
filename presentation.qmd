@@ -31,6 +31,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 sns.set_theme(style="white")
+data = pd.read_csv("data/risk_factors_cervical_cancer.csv", na_values="?")
 ```
 
 
@@ -55,13 +56,11 @@ sns.set_theme(style="white")
 #| label: load-data
 #| echo: false
 
-data = pd.read_csv("data/risk_factors_cervical_cancer.csv", na_values="?")
 N = data.shape[0]
 prev = data["Biopsy"].mean() if "Biopsy" in data.columns else np.nan
-
 print(f"Rows: {N:,}  |  Positives (Biopsy=1): {prev:.1%}")
 
-plt.figure(figsize=(7, 5))
+plt.figure(figsize=(6, 5))
 sns.countplot(x='Biopsy', data=data, hue = 'Biopsy')
 plt.title('Distribution of the Biopsy in the Cohort')
 plt.xlabel('Biopsy Result (0: No, 1: Yes)')
