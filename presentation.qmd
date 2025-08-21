@@ -44,6 +44,7 @@ sns.set_theme(style="white")
 ## Research Questions
 
 -   Can we accurately predict cervical cancer biopsy outcomes using only non-invasive risk factors and lifestyle history?
+
 -   Which factor contribute the most to cervical cancer risk?
 
 ## Data
@@ -55,7 +56,6 @@ sns.set_theme(style="white")
 #| echo: false
 
 data = pd.read_csv("data/risk_factors_cervical_cancer.csv", na_values="?")
-
 N = data.shape[0]
 prev = data["Biopsy"].mean() if "Biopsy" in data.columns else np.nan
 
@@ -69,6 +69,7 @@ plt.ylabel('Count')
 plt.show()
 
 ```
+
 
 # Data Cleaning
 
