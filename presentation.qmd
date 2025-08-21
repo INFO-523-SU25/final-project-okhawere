@@ -24,7 +24,8 @@ execute:
 ```{python}
 #| label: setup
 #| include: false
-#| 
+#| echo: false
+
 import numpy as np, pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -48,7 +49,7 @@ sns.set_theme(style="white")
 
 ```{python}
 #| label: load-data
-#| message: false
+#| echo: false
 
 data = pd.read_csv("data/risk_factors_cervical_cancer.csv", na_values="?")
 
